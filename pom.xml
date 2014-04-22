@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.jevis</groupId>
+	<artifactId>application</artifactId>
+	<version>3.0.0</version>
+	<packaging>jar</packaging>
+
+	<name>JEApplication</name>
+	<url>http://openjevis.org</url>
+
+	<ciManagement>
+		<system>Jenkins</system>
+		<url>http://openjevis.org:</url>
+	</ciManagement>
+
+	<organization>
+		<name>OpenJEVis</name>
+		<url>http://openjevis.org</url>
+	</organization>
+
+	<issueManagement>
+		<url>http://openjevis.org/projects/openjevis/issues</url>
+		<system>Redmine</system>
+	</issueManagement>
+
+	<scm>
+		<url>https://github.com/OpenJEVis</url>
+		<connection>https</connection>
+	</scm>
+
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<repositories>
+		<!-- JEVis 3.0 Repository -->
+		<repository>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+				<checksumPolicy>fail</checksumPolicy>
+			</releases>
+			<id>openjevis</id>
+			<name>OpenJEVis Repository</name>
+			<url>http://openjevis.org:13080/plugin/repository/everything/</url>
+			<layout>default</layout>
+		</repository>
+	</repositories>
+
+	<dependencies>
+		<!-- JEVis 3 Dependencies -->
+		<dependency>
+			<groupId>org.jevis.api</groupId>
+			<artifactId>jeapi</artifactId>
+			<version>3.0.1-Alpha</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jevis.api.sql</groupId>
+			<artifactId>jeapi-sql</artifactId>
+			<version>3.0.1-Alpha</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+					<compilerArguments>
+						<bootclasspath>${sun.boot.class.path}${path.separator}${java.home}/lib/jfxrt.jar</bootclasspath>
+					</compilerArguments>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.16</version>
+				<configuration>
+					<additionalClasspathElements>
+						<additionalClasspathElement>${java.home}/lib/jfxrt.jar</additionalClasspathElement>
+					</additionalClasspathElements>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
