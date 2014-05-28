@@ -40,3 +40,4 @@ org/jevis/application/connection/Connection.class
 org/jevis/application/dialog/LoginDialog$6$1.class
 org/jevis/application/login/LoginController$ConnectionChangeListener.class
 org/jevis/application/connection/ConnectionData.class
+org/jevis/application/statusbar/Statusbar$1.class
