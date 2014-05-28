@@ -112,7 +112,7 @@ public class LoginDialog {
 
         Scene scene = new Scene(root);
         stage.setScene(scene);
-        stage.setWidth(400);
+        stage.setWidth(410);
         stage.setHeight(325);
         stage.initStyle(StageStyle.UTILITY);
         stage.setResizable(false);
