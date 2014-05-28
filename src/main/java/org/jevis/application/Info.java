@@ -18,23 +18,15 @@
  * JEApplication is part of the OpenJEVis project, further project information
  * are published at <http://www.OpenJEVis.org/>.
  */
-package org.jevis.application.application;
+package org.jevis.application;
 
-import org.jevis.application.connection.Connection;
+import org.jevis.commons.application.LibraryInfo;
 
-import javafx.scene.Parent;
+/**
+ *
+ * @author fs
+ */
+public class Info {
 
-public interface PreloadedApplication {
-
-    /**
-     * @param Connection connection to JEVis
-     *
-     * This function of the main application is called by the preloader
-     */
-    public void startMainApplication(Connection jevis);
-
-    /**
-     * @return
-     */
-    public Parent getParentNode();
+    public static LibraryInfo INFO = new LibraryInfo("JEApplication", "3.0.0");
 }
