@@ -4,6 +4,7 @@ org/jevis/application/dialog/ExceptionDialog$Response.class
 org/jevis/application/type/GUIConstants.class
 org/jevis/application/dialog/ConfirmDialog$Response.class
 org/jevis/application/application/PreloadedApplication.class
+org/jevis/application/statusbar/Statusbar$1$1.class
 org/jevis/application/dialog/AboutDialog$1.class
 org/jevis/application/dialog/ExceptionDialog$7.class
 org/jevis/application/login/LoginPreloader.class
@@ -20,9 +21,12 @@ org/jevis/application/unit/UnitChooserPanel$1.class
 org/jevis/application/dialog/AboutDialog.class
 org/jevis/application/login/LoginController$1.class
 org/jevis/application/dialog/ConfirmDialog.class
+org/jevis/application/dialog/LoginDialog$5$1.class
 org/jevis/application/dialog/ExceptionDialog$6.class
 org/jevis/application/unit/UnitChooserPanel$4.class
 org/jevis/application/unit/UnitChooserPanel.class
+org/jevis/application/dialog/LoginDialog$7$1.class
+org/jevis/application/statusbar/Statusbar$1$2.class
 org/jevis/application/dialog/ExceptionDialog$3.class
 org/jevis/application/unit/UnitChooserDialog.class
 org/jevis/application/unit/UnitChooserPanel$2.class
@@ -37,8 +41,10 @@ org/jevis/application/unit/UnitChooserPanel$QuantitiesListCell.class
 org/jevis/application/dialog/ExceptionDialog$1.class
 org/jevis/application/unit/UnitChooserPanel$5.class
 org/jevis/application/connection/DummyConnection.class
+org/jevis/application/dialog/LoginDialog$9.class
 org/jevis/application/dialog/ConfirmDialog$1.class
 org/jevis/application/dialog/ExceptionDialog$4.class
+org/jevis/application/statusbar/Statusbar$2.class
 org/jevis/application/unit/UnitChooserDialog$2.class
 org/jevis/application/login/LoginPreloader$1.class
 org/jevis/application/login/LoginController.class
@@ -52,7 +58,6 @@ org/jevis/application/dialog/ExceptionDialog$5.class
 org/jevis/application/dialog/LoginDialog$5.class
 org/jevis/application/dialog/ConfirmDialog$2.class
 org/jevis/application/connection/Connection.class
-org/jevis/application/dialog/LoginDialog$6$1.class
 org/jevis/application/login/LoginController$ConnectionChangeListener.class
 org/jevis/application/connection/ConnectionData.class
 org/jevis/application/statusbar/Statusbar$1.class

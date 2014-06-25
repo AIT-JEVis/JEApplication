@@ -21,11 +21,14 @@
 package org.jevis.application.dialog;
 
 import java.awt.Desktop;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import static java.util.Locale.*;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,6 +36,9 @@ import java.util.prefs.Preferences;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
@@ -45,6 +51,8 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Separator;
@@ -56,9 +64,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Callback;
+import org.jevis.api.JEVisClass;
 import org.jevis.api.JEVisDataSource;
 import org.jevis.api.JEVisException;
 import org.jevis.application.resource.ResourceLoader;
@@ -113,7 +124,7 @@ public class LoginDialog {
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setWidth(410);
-        stage.setHeight(325);
+        stage.setHeight(345);
         stage.initStyle(StageStyle.UTILITY);
         stage.setResizable(false);
 
@@ -204,6 +215,14 @@ public class LoginDialog {
         Separator sep = new Separator(Orientation.HORIZONTAL);
         sep.setMinHeight(10);
 
+        //TODO read the allowd Languages from strt paramete or ask the JEVis Translation service
+        List<Locale> availableLang = new ArrayList<>();
+        availableLang.add(UK);
+//        availableLang.add(GERMAN);
+
+        Label lLang = new Label("Language: ");
+        ComboBox langSelect = buildLanguageBox(availableLang);
+
         //spalte , zeile bei 0 starten
         int x = 0;
 
@@ -211,6 +230,8 @@ public class LoginDialog {
         content.add(loginF, 1, x);
         content.add(passwordL, 0, ++x);
         content.add(passwordF, 1, x);
+        content.add(lLang, 0, ++x);
+        content.add(langSelect, 1, x);
         content.add(serverSQLL, 0, ++x);
         content.add(serverSQLBox, 1, x);
         content.add(storeConfig, 1, ++x);
@@ -220,6 +241,7 @@ public class LoginDialog {
         GridPane.setHgrow(loginF, Priority.ALWAYS);
         GridPane.setHgrow(passwordF, Priority.ALWAYS);
         GridPane.setHgrow(serverSQLBox, Priority.ALWAYS);
+        GridPane.setHgrow(langSelect, Priority.ALWAYS);
 
         //new Separator(Orientation.HORIZONTAL),
         root.getChildren().addAll(imageBox, content, buttonPanel);
@@ -261,6 +283,63 @@ public class LoginDialog {
         } else {
             storeConfig.setSelected(false);
         }
+    }
+
+    private ComboBox buildLanguageBox(List<Locale> locales) {
+        Callback<ListView<Locale>, ListCell<Locale>> cellFactory = new Callback<ListView<Locale>, ListCell<Locale>>() {
+            @Override
+            public ListCell<Locale> call(ListView<Locale> param) {
+                final ListCell<Locale> cell = new ListCell<Locale>() {
+                    {
+                        super.setPrefWidth(260);
+                    }
+
+                    @Override
+                    public void updateItem(Locale item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item != null) {
+
+                            HBox box = new HBox(5);
+                            box.setAlignment(Pos.CENTER_LEFT);
+
+//                            if (item.getLanguage().equals(US.getLanguage())) {
+//
+//                            } else if (item.getLanguage().equals(GERMAN.getLanguage())) {
+//
+//                            }
+                            Image img = new Image("/icons/" + item.getLanguage() + ".png");
+                            ImageView iv = new ImageView(img);
+                            iv.fitHeightProperty().setValue(20);
+                            iv.fitWidthProperty().setValue(20);
+                            iv.setSmooth(true);
+
+                            Label name = new Label(item.getDisplayLanguage());
+                            name.setTextFill(Color.BLACK);
+
+                            box.getChildren().setAll(iv, name);
+                            setGraphic(box);
+
+                        }
+                    }
+                };
+                return cell;
+            }
+        };
+
+        ObservableList<Locale> options = FXCollections.observableArrayList(locales);
+
+        final ComboBox<Locale> comboBox = new ComboBox<Locale>(options);
+        comboBox.setCellFactory(cellFactory);
+        comboBox.setButtonCell(cellFactory.call(null));
+
+        //TODO: load default lange from Configfile or so
+        comboBox.getSelectionModel().select(UK);//Default
+
+        comboBox.setMinWidth(250);
+        comboBox.setMaxWidth(Integer.MAX_VALUE);//workaround
+
+        return comboBox;
+
     }
 
     private void storePreference() {
@@ -394,6 +473,19 @@ public class LoginDialog {
                 ok.setGraphic(waitPane);
             }
         });
+    }
+
+    public static ImageView convertToImageView(BufferedImage icon, double w, double h) throws JEVisException {
+        if (icon == null) {
+            return new ImageView();
+        }
+
+        Image image = SwingFXUtils.toFXImage(icon, null);
+        ImageView iv = new ImageView(image);
+        iv.fitHeightProperty().setValue(h);
+        iv.fitWidthProperty().setValue(w);
+        iv.setSmooth(true);
+        return iv;
     }
 
 }

@@ -36,9 +36,8 @@ public class JavaVersionCheck {
     public JavaVersionCheck() {
 
         String version = System.getProperty("java.version");
-        System.out.println("Version: " + version);
+        System.out.println("JAVA Version: " + version);
         String[] split = version.split("\\.");
-        System.out.println("version.split: " + Arrays.toString(split));
         int first = Integer.parseInt(split[0]);
         int majorV = Integer.parseInt(split[1]);
         int patch = Integer.parseInt(split[2].split("_")[1]);

@@ -22,13 +22,20 @@ package org.jevis.application.statusbar;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableBooleanValue;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToolBar;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.paint.Color;
 import org.jevis.api.JEVisDataSource;
 import org.jevis.api.JEVisException;
 import org.jevis.application.resource.ResourceLoader;
@@ -37,7 +44,20 @@ public class Statusbar extends ToolBar {
 
     private final int ICON_SIZE = 20;
     private JEVisDataSource _ds;
+    private String lastUsername = "";
+    private String lastPassword = "";
+
+    private final int WAIT_TIME = 5000;//MSEC
+    private final int RETRY_COUNT = 720;//count
+
     Label userName = new Label("Max Musterman");
+    Label onlineInfo = new Label("Online");
+    HBox conBox = new HBox();
+    ImageView connectIcon = ResourceLoader.getImage("network-connected.png", ICON_SIZE, ICON_SIZE);
+    ImageView notConnectIcon = ResourceLoader.getImage("network-disconnected.png", ICON_SIZE, ICON_SIZE);
+    private Tooltip tt = new Tooltip("Warning:\nConnection to server lost. Trying to reconnect...  ");
+    private int retryCount = 0;
+    public BooleanProperty connectedProperty = new SimpleBooleanProperty(true);
 
     public Statusbar(JEVisDataSource ds) {
         super();
@@ -50,11 +70,10 @@ public class Statusbar extends ToolBar {
 
         ImageView userIcon = ResourceLoader.getImage("user.png", ICON_SIZE, ICON_SIZE);
 
-        Label onlineInfo = new Label("Online");
-
 //        Label userLabel = new Label("User:");
-        ImageView connectIcon = ResourceLoader.getImage("network-connected.png", ICON_SIZE, ICON_SIZE);
         ImageView notification = ResourceLoader.getImage("note_3.png", ICON_SIZE, ICON_SIZE);
+
+        conBox.getChildren().setAll(connectIcon);
 
         Label serverL = new Label("Server");
         Pane spacer = new Pane();
@@ -64,7 +83,8 @@ public class Statusbar extends ToolBar {
         HBox.setHgrow(onlineInfo, Priority.NEVER);
         HBox.setHgrow(userName, Priority.NEVER);
 
-        root.getChildren().addAll(userIcon, userName, spacer, notification, connectIcon, onlineInfo);
+        //TODO implement notification
+        root.getChildren().addAll(userIcon, userName, spacer, conBox, onlineInfo);
 
         HBox.setHgrow(root, Priority.ALWAYS);
         getItems().add(root);
@@ -81,15 +101,91 @@ public class Statusbar extends ToolBar {
             Logger.getLogger(Statusbar.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        new Thread() {
+        try {
+            lastUsername = _ds.getCurrentUser().getName();
+        } catch (JEVisException ex) {
+            Logger.getLogger(Statusbar.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        Thread checkOnline = new Thread() {
 
             @Override
             public void run() {
-                //TODO checlk is alive
+                try {
+                    while (true) {
+                        sleep(WAIT_TIME);
+                        if (_ds.isConnectionAlive()) {
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+//                                    System.out.println("still online");
+                                    onlineInfo.setText("Online");
+                                    onlineInfo.setTextFill(Color.BLACK);
+                                    conBox.getChildren().setAll(connectIcon);
+
+                                    if (tt.isShowing()) {
+                                        tt.hide();
+                                    }
+                                    connectedProperty.setValue(Boolean.TRUE);
+                                }
+                            });
+
+                        } else {
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+//                                    System.out.println("whaa were are offline");
+                                    onlineInfo.setText("Offline");
+                                    onlineInfo.setTextFill(Color.web("#D62748"));//red
+                                    conBox.getChildren().setAll(notConnectIcon);
+
+//                                    onlineInfo.setTooltip(tt);
+                                    final Point2D nodeCoord = onlineInfo.localToScene(0.0, 0.0);
+                                    if (!tt.isShowing()) {
+                                        tt.show(onlineInfo, nodeCoord.getX(), nodeCoord.getY());
+                                    }
+                                    connectedProperty.setValue(Boolean.FALSE);
+                                    reconnect();
+                                }
+                            });
+
+                        }
+                    }
+
+                    //TODO checlk is alive
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Statusbar.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (JEVisException ex) {
+                    Logger.getLogger(Statusbar.class.getName()).log(Level.SEVERE, null, ex);
+                }
 
             }
 
-        }.start();
+        };
+        checkOnline.setDaemon(true);
+        checkOnline.start();
+    }
+
+    private void reconnect() {
+        Thread reConn = new Thread() {
+
+            @Override
+            public void run() {
+                try {
+                    if (retryCount < RETRY_COUNT) {
+                        System.out.println("try Reconnect");
+                        _ds.reconnect();
+                        ++retryCount;
+                    } else {
+                        System.out.println("No Connection Possible .. giving up");
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        };
+        reConn.setDaemon(true);
+        reConn.start();
     }
 
 // TODO implement status bar for JEVis applications
