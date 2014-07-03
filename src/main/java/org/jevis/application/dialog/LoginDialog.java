@@ -91,7 +91,7 @@ public class LoginDialog {
     final TextField loginF = new TextField("");
     final ComboBox serverSQLBox = new ComboBox();
     private final HBox waitPane = new HBox();
-    private Label loginButtonL = new Label("Login  ");//dirty space for GUI...
+    private Label loginButtonL = new Label("Login");//dirty space for GUI...
     final Stage stage = new Stage();
     final private CheckBox storeConfig = new CheckBox("Remember me");
     private Preferences pref = Preferences.userRoot().node("JEVis");

@@ -52,7 +52,7 @@ public class JavaVersionCheck {
 
         if (!versionK) {
             JOptionPane.showMessageDialog(null,
-                    "JEVis needs JAVA version 1.7.55 or newer",
+                    "JEVis needs JAVA version 1.7.55 or newer but now JAVA 8",
                     "JAVA Version Warning",
                     JOptionPane.WARNING_MESSAGE);
 
