@@ -260,7 +260,7 @@ public class SelectionTree extends TreeView<ObjectContainer> {
     }
 
     public TreeItem<ObjectContainer> buildItem(JEVisAttribute attribute) {
-        System.out.println("BuildAttribute: " + attribute);
+//        System.out.println("BuildAttribute: " + attribute);
         String key = "" + attribute.getObject().getID() + attribute.getName();
         if (_containerCache.containsKey(key)) {
             return _containerCache.get(key);
@@ -274,7 +274,7 @@ public class SelectionTree extends TreeView<ObjectContainer> {
     }
 
     public TreeItem<ObjectContainer> buildItem(JEVisObject object) {
-        System.out.println("buildObject: " + object);
+//        System.out.println("buildObject: " + object);
         if (_containerCache.containsKey(object.getID().toString())) {
             return _containerCache.get(object.getID().toString());
         }
@@ -288,18 +288,18 @@ public class SelectionTree extends TreeView<ObjectContainer> {
     }
 
     public void addChildrenList(TreeItem<ObjectContainer> item, ObservableList<TreeItem<ObjectContainer>> list) {
-        System.out.println("Add Children for:  " + item.getValue().getIdentifier());
+//        System.out.println("Add Children for:  " + item.getValue().getIdentifier());
         _itemChildren.put(item, list);
         try {
 
-            System.out.println("add attributes");
+//            System.out.println("add attributes");
             //Now also add attributes
             for (JEVisAttribute child : item.getValue().getObject().getAttributes()) {
                 TreeItem<ObjectContainer> newItem = buildItem(child);
                 list.add(newItem);
             }
 
-            System.out.println("add Children");
+//            System.out.println("add Children");
             if (item.getValue().isObject()) {
                 for (JEVisObject child : item.getValue().getObject().getChildren()) {
                     TreeItem<ObjectContainer> newItem = buildItem(child);
