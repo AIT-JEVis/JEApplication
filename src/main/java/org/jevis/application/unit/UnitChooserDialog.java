@@ -91,7 +91,7 @@ public class UnitChooserDialog {
         topTitle.setTextFill(Color.web("#0076a3"));
         topTitle.setFont(Font.font("Cambria", 25));
 
-        ImageView imageView = ResourceLoader.getImage("1401992837_Measurement.png", 65, 65);
+        ImageView imageView = ResourceLoader.getImage("1405368933_kruler.png", 65, 65);
 
         VBox vboxLeft = new VBox();
         VBox vboxRight = new VBox();

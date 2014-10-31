@@ -3,6 +3,7 @@ org/jevis/application/type/GUIConstants.class
 org/jevis/application/object/tree/SelectionTree$1.class
 org/jevis/application/dialog/ConfirmDialog$Response.class
 org/jevis/application/dialog/SelectTargetDialog$1.class
+org/jevis/application/unit/UnitChooser$1.class
 org/jevis/application/application/PreloadedApplication.class
 org/jevis/application/statusbar/Statusbar$1$1.class
 org/jevis/application/login/LoginPreloader.class
@@ -15,6 +16,7 @@ org/jevis/application/unit/UnitChooserDialog$Response.class
 org/jevis/application/type/GUIConstants$1.class
 org/jevis/application/dialog/LoginDialog$5$1.class
 org/jevis/application/dialog/ExceptionDialog$6.class
+org/jevis/application/unit/UnitChooser$2$1.class
 org/jevis/application/dialog/SelectTargetDialog$3.class
 org/jevis/application/object/tree/SelectionTree$4.class
 org/jevis/application/dialog/ExceptionDialog$3.class
@@ -68,6 +70,7 @@ org/jevis/application/object/tree/SelectionTree$3.class
 org/jevis/application/dialog/ExceptionDialog.class
 org/jevis/application/unit/UnitChooserDialog$1.class
 org/jevis/application/dialog/LoginDialog$6.class
+org/jevis/application/unit/UnitChooser.class
 org/jevis/application/dialog/InfoDialog.class
 org/jevis/application/dialog/ExceptionDialog$1.class
 org/jevis/application/dialog/SelectTargetDialog$Response.class
@@ -81,6 +84,8 @@ org/jevis/application/resource/ResourceLoader.class
 org/jevis/application/dialog/ExceptionDialog$2.class
 org/jevis/application/object/tree/SelectionTree$2.class
 org/jevis/application/dialog/LoginDialog.class
+org/jevis/application/unit/UnitChooser$1$1.class
+org/jevis/application/unit/UnitChooser$2.class
 org/jevis/application/unit/UnitChooserPanel$UnitListCell.class
 org/jevis/application/dialog/LoginDialog$5.class
 org/jevis/application/connection/Connection.class

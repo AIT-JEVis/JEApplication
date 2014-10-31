@@ -5,8 +5,11 @@
  */
 package org.jevis.application.unit;
 
+import java.io.UnsupportedEncodingException;
+import java.text.Normalizer;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.regex.Pattern;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -22,6 +25,12 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.util.Callback;
+import javax.measure.Measure;
+import javax.measure.converter.UnitConverter;
+import javax.measure.unit.NonSI;
+import static javax.measure.unit.NonSI.MILE;
+import javax.measure.unit.SI;
+import static javax.measure.unit.SI.KILOMETER;
 import javax.measure.unit.Unit;
 import org.jevis.commons.unit.UnitManager;
 
@@ -172,6 +181,23 @@ public class UnitChooserPanel {
 
     }
 
+    public static String buildName(String type, Unit<?> unit) {
+        String s = unit.toString();
+        String s1 = Normalizer.normalize(s, Normalizer.Form.NFKD);
+        String regex = Pattern.quote("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+");
+
+        try {
+            String s2 = new String(s1.replaceAll(regex, "").getBytes("ascii"), "ascii");
+            s2 = s2.replace("?", "");
+            return type + " (" + s2 + ")";
+
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return type + " (" + s1 + ")";
+    }
+
     private void fillUnits(Unit unit) {
         System.out.println("fill units");
         boxUnit.setButtonCell(new UnitListCell());
@@ -188,7 +214,24 @@ public class UnitChooserPanel {
 
         boxUnit.getItems().clear();
         boxUnit.getSelectionModel().clearSelection();
-        boxUnit.getItems().add(unit);
+
+        System.out.println("watt: " + SI.WATT);
+        System.out.println("Jule: " + SI.JOULE);
+        System.out.println("Wh: " + SI.WATT.times(NonSI.HOUR));
+        Unit kWh = SI.KILO(SI.WATT.times(NonSI.HOUR));
+        System.out.println("kWh1: " + kWh.getStandardUnit());
+        System.out.println("kWh2: " + kWh.getDimension());
+        System.out.println("kWh3: " + SI.WATT.times(NonSI.HOUR).divide(NonSI.HOUR));
+
+        System.out.println("True1: " + kWh.isCompatible(SI.WATT));
+        System.out.println("True2: " + kWh.isCompatible(SI.JOULE));
+
+//        UnitConverter toKWH = SI.WATT.getConverterTo(kWh);
+//        System.out.println("toKWH: " + toKWH.convert(Measure.valueOf(100, SI.WATT).doubleValue(SI.WATT)));
+        System.out.println("kWh: " + kWh);
+        System.out.println("kWh.name: " + buildName("Energy", kWh));
+
+//        boxUnit.getItems().add(unit.getDimension().);
         boxUnit.getItems().addAll(siList);
 //        boxQuantity.getItems().addAll(new Separator());
         boxUnit.getItems().addAll(nonSIList);
