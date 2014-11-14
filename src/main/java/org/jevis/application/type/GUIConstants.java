@@ -22,6 +22,7 @@ public class GUIConstants {
     public static DisplayType NUMBER_WITH_UNIT = new DisplayType("Number with Unit", JEVisConstants.PrimitiveType.DOUBLE);
     public static DisplayType BASIC_FILER = new DisplayType("File Selector", JEVisConstants.PrimitiveType.FILE);
     public static DisplayType BASIC_BOOLEAN = new DisplayType("Check Box", JEVisConstants.PrimitiveType.BOOLEAN);
+    public static DisplayType PASSWORD_PBKDF2 = new DisplayType("Password PBKDF2", JEVisConstants.PrimitiveType.PASSWORD_PBKDF2);
 
     public static List<DisplayType> ALL = new ArrayList<DisplayType>() {
         {
@@ -30,6 +31,7 @@ public class GUIConstants {
             add(NUMBER_WITH_UNIT);
             add(BASIC_FILER);
             add(BASIC_BOOLEAN);
+            add(PASSWORD_PBKDF2);
         }
     };
 
