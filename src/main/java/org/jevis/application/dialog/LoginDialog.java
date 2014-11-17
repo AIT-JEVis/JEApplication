@@ -69,7 +69,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
-import org.jevis.api.JEVisClass;
 import org.jevis.api.JEVisDataSource;
 import org.jevis.api.JEVisException;
 import org.jevis.application.resource.ResourceLoader;
@@ -83,6 +82,7 @@ import org.jevis.api.sql.JEVisDataSourceSQL;
 public class LoginDialog {
 
     //https://www.iconfinder.com/icons/54330/login_icon#size=32
+    //public static String ICON_LOGIN = "1401219513_login.png";
     public static String ICON_LOGIN = "1401219513_login.png";
     private JEVisDataSourceSQL ds;
     private final Button ok = new Button("Login");
@@ -105,7 +105,21 @@ public class LoginDialog {
     final ProgressBar progress = new ProgressBar(0);
 
     public JEVisDataSource showSQL(Stage owner) {
+        return showSQL(owner, "/icons/openjevislogo_simple2.png");
+    }
 
+    public JEVisDataSource showSQL(Stage owner, String banner) {
+        System.out.println("old login");
+        return showSQL(owner, banner, false, true, "user:password@server:port/jevis");
+    }
+
+    public JEVisDataSource showSQL(Stage owner, String banner, final boolean ssl, final boolean showServer, String defaultServer) {
+//        System.out.println("defaultServer: " + defaultServer);
+
+        //JAVA FX for JAVA 1.7  worka round. Javafx will exit the thred after closing the first stage and cannot be reopend
+        //see http://stackoverflow.com/questions/25193198/prevent-javafx-thread-from-dying-with-jfxpanel-swing-interop
+        //TODo: can be removed with java 1.8 
+//        Platform.setImplicitExit(false);
         stage.setTitle("JEVis Login");
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.initOwner(owner);
@@ -113,6 +127,7 @@ public class LoginDialog {
         waitPane.setAlignment(Pos.CENTER);
         waitPane.getChildren().setAll(loginButtonL);
         progress.setMaxWidth(65);
+        progress.setStyle("-fx-box-border: transparent;");
         ok.setText("");
         ok.setGraphic(waitPane);
         ok.setMaxWidth(70);
@@ -129,7 +144,8 @@ public class LoginDialog {
         stage.setResizable(false);
 
         HBox imageBox = new HBox();
-        ImageView logo = new ImageView(new Image("/icons/openjevislogo_simple2.png"));
+//         ImageView logo = new ImageView(new Image("/icons/logo_coffee_klein_login.png"));
+        ImageView logo = new ImageView(new Image(banner));
         logo.setPreserveRatio(true);
         logo.setFitWidth(stage.getWidth());
         logo.setFitWidth(300);
@@ -156,7 +172,6 @@ public class LoginDialog {
             @Override
             public void handle(ActionEvent e) {
                 try {
-                    System.out.println("h:" + stage.getHeight() + " w:" + stage.getWidth());
                     URI uri = new URI("http://openjevis.org/account/register");
                     if (Desktop.isDesktopSupported()) {
                         System.out.println("Desktop is supportet");
@@ -194,15 +209,19 @@ public class LoginDialog {
 
         Label loginL = new Label("Login:");
         loginF.setPromptText("Username");
+        loginL.setMinWidth(80);
         Label passwordL = new Label("Password:");
         Label serverSQLL = new Label("Server:");
 
+        if (defaultServer == null || defaultServer.isEmpty()) {
+            defaultServer = "user:password@server:port/jevis";
+        }
         serverSQLBox.getItems().addAll(
-                "user:password@server:port/jevis"
+                defaultServer
         );
 
         serverSQLBox.setEditable(true);
-        serverSQLBox.setMaxWidth(Double.MAX_VALUE);
+        serverSQLBox.setMaxWidth(300);
         serverSQLBox.valueProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
@@ -232,8 +251,14 @@ public class LoginDialog {
         content.add(passwordF, 1, x);
         content.add(lLang, 0, ++x);
         content.add(langSelect, 1, x);
-        content.add(serverSQLL, 0, ++x);
-        content.add(serverSQLBox, 1, x);
+
+        if (showServer) {
+            content.add(serverSQLL, 0, ++x);
+            content.add(serverSQLBox, 1, x);
+        } else {
+            content.add(new Label(), 0, ++x);
+        }
+
         content.add(storeConfig, 1, ++x);
 //        content.add(buttonPanel, 0, ++x, 2, 1);
 
@@ -251,8 +276,7 @@ public class LoginDialog {
         ok.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
-                login();
-
+                login(serverSQLBox.getSelectionModel().getSelectedItem().toString(), ssl);
             }
         });
 
@@ -266,20 +290,28 @@ public class LoginDialog {
             }
         });
 
-        loadPreference();
+        loadPreference(showServer, defaultServer);
         stage.showAndWait();
 
         return ds;
     }
 
-    private void loadPreference() {
+    private void loadPreference(boolean showServer, String defaultServer) {
 
         if (!pref.get("JEVisUser", "").isEmpty()) {
             storeConfig.setSelected(true);
             loginF.setText(pref.get("JEVisUser", ""));
-            serverSQLBox.getItems().add(pref.get("LastServer", ""));
             passwordF.setText(pref.get("JEVisPW", ""));
-            serverSQLBox.getSelectionModel().selectLast();
+
+            if (showServer) {
+                serverSQLBox.getItems().add(pref.get("LastServer", ""));
+                serverSQLBox.getSelectionModel().selectLast();
+            }
+
+            if (defaultServer != null && !defaultServer.isEmpty()) {
+                serverSQLBox.getSelectionModel().select(defaultServer);
+            }
+
         } else {
             storeConfig.setSelected(false);
         }
@@ -354,7 +386,7 @@ public class LoginDialog {
 
     }
 
-    private void login() {
+    private void login(final String serverURL, final boolean ssl) {
 //        ok.setDisable(true);
 
 //        waitPane.getChildren().setAll(loginButtonL, progress);
@@ -381,7 +413,9 @@ public class LoginDialog {
                 //super simple server settings parser
                 //TODO implement URi parser for JEVisDataSourceConnection
                 //example "jevis:jevis@alpha.openjevis.org:3306/jevis" 
-                StringTokenizer tokenizer = new StringTokenizer(serverSQLBox.getSelectionModel().getSelectedItem().toString(), ":/@");
+//                StringTokenizer tokenizer = new StringTokenizer(serverSQLBox.getSelectionModel().getSelectedItem().toString(), ":/@");
+                System.out.println("ServerURL: " + serverURL);
+                StringTokenizer tokenizer = new StringTokenizer(serverURL, ":/@");
 
                 //Dump way to parse the string
                 List<String> para = new ArrayList<String>();
@@ -393,22 +427,19 @@ public class LoginDialog {
                 final String port = para.get(3);
                 final String schema = para.get(4);
                 final String dbuser = para.get(0);
-                final String pwuser = para.get(1);
+                final String dbpw = para.get(1);
                 final String jevisUser = loginF.getText();
                 final String jevisPW = passwordF.getText();
                 System.out.println("Server: '" + server + "' Port: '" + port
                         + "' Schema: '" + schema + "' dbuser: '" + dbuser
-                        + "' dbpw: '" + pwuser + "' jevisuser: '"
+                        + "' dbpw: '" + dbpw + "' jevisuser: '"
                         + jevisUser + "' jevispw: '" + jevisPW + "'");
 
                 if (para.size() >= 5) {
-                    System.out.println("OK");
-                    //TODo
                     try {
-                        ds = new JEVisDataSourceSQL(
-                                server, port, schema,
-                                dbuser, pwuser,
-                                null, null);
+
+                        ds = new JEVisDataSourceSQL(server, port, schema, dbuser, dbpw);
+                        ds.enableSSL(ssl);
 
                         if (ds.connect(jevisUser, jevisPW)) {
                             Platform.runLater(new Runnable() {
@@ -427,7 +458,9 @@ public class LoginDialog {
                         }
 
                     } catch (JEVisException ex) {
-                        ex.printStackTrace();
+                        //TODO: implement an error handling to let the user know what happend
+                        Logger.getLogger(LoginDialog.class.getName()).log(Level.SEVERE, null, ex);
+
                         waitEnd();
                     }
                 } else {
