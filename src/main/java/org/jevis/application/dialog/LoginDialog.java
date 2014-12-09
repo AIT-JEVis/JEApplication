@@ -95,6 +95,7 @@ public class LoginDialog {
     final Stage stage = new Stage();
     final private CheckBox storeConfig = new CheckBox("Remember me");
     private Preferences pref = Preferences.userRoot().node("JEVis");
+    private final String URL_SYNTAX = "user:password@server:port/jevis";
 //    private Thread load = new Thread();
 
     public static enum Response {
@@ -109,8 +110,7 @@ public class LoginDialog {
     }
 
     public JEVisDataSource showSQL(Stage owner, String banner) {
-        System.out.println("old login");
-        return showSQL(owner, banner, false, true, "user:password@server:port/jevis");
+        return showSQL(owner, banner, false, true, "");
     }
 
     public JEVisDataSource showSQL(Stage owner, String banner, final boolean ssl, final boolean showServer, String defaultServer) {
@@ -214,7 +214,7 @@ public class LoginDialog {
         Label serverSQLL = new Label("Server:");
 
         if (defaultServer == null || defaultServer.isEmpty()) {
-            defaultServer = "user:password@server:port/jevis";
+            defaultServer = URL_SYNTAX;
         }
         serverSQLBox.getItems().addAll(
                 defaultServer
@@ -308,7 +308,7 @@ public class LoginDialog {
                 serverSQLBox.getSelectionModel().selectLast();
             }
 
-            if (defaultServer != null && !defaultServer.isEmpty()) {
+            if (!defaultServer.equals(URL_SYNTAX)) {
                 serverSQLBox.getSelectionModel().select(defaultServer);
             }
 

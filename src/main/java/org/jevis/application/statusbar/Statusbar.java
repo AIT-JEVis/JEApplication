@@ -50,7 +50,7 @@ public class Statusbar extends ToolBar {
     private final int WAIT_TIME = 5000;//MSEC
     private final int RETRY_COUNT = 720;//count
 
-    Label userName = new Label("Max Musterman");
+    Label userName = new Label("");
     Label onlineInfo = new Label("Online");
     HBox conBox = new HBox();
     ImageView connectIcon = ResourceLoader.getImage("network-connected.png", ICON_SIZE, ICON_SIZE);
@@ -93,12 +93,28 @@ public class Statusbar extends ToolBar {
     }
 
     private void setBar() {
+        String name = "";
+        String lastName = "";
+        String userAccount = "";
         try {
-            String name = _ds.getCurrentUser().getAttribute("First Name").getLatestSample().getValueAsString();
-            String lastName = _ds.getCurrentUser().getAttribute("Last Name").getLatestSample().getValueAsString();
-            userName.setText(name + " " + lastName + " (" + _ds.getCurrentUser().getName() + ")");
-        } catch (JEVisException ex) {
+            if (_ds.getCurrentUser().getAttribute("First Name").hasSample()) {
+                name = _ds.getCurrentUser().getAttribute("First Name").getLatestSample().getValueAsString();
+            }
+
+            if (_ds.getCurrentUser().getAttribute("Last Name").hasSample()) {
+                lastName = _ds.getCurrentUser().getAttribute("Last Name").getLatestSample().getValueAsString();
+            }
+
+            userAccount = _ds.getCurrentUser().getName();
+//            userName.setText(name + " " + lastName + " (" + _ds.getCurrentUser().getName() + ")");
+        } catch (Exception ex) {
             Logger.getLogger(Statusbar.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        if (name.isEmpty() && lastName.isEmpty()) {
+            userName.setText(userAccount);
+        } else {
+            userName.setText(name + " " + lastName);
         }
 
         try {

@@ -133,7 +133,8 @@ public class SelectTargetDialog {
         buttonPanel.setAlignment(Pos.BOTTOM_RIGHT);
         buttonPanel.setPadding(new Insets(5));
 
-        root.getChildren().addAll(header, new Separator(Orientation.HORIZONTAL), content, buttonPanel);
+//        root.getChildren().addAll(header, new Separator(Orientation.HORIZONTAL), content, buttonPanel);
+        root.getChildren().addAll(header, content, buttonPanel);
         VBox.setVgrow(content, Priority.ALWAYS);
         return root;
     }
