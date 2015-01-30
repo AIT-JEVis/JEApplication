@@ -108,7 +108,7 @@ public class Statusbar extends ToolBar {
             userAccount = _ds.getCurrentUser().getName();
 //            userName.setText(name + " " + lastName + " (" + _ds.getCurrentUser().getName() + ")");
         } catch (Exception ex) {
-            Logger.getLogger(Statusbar.class.getName()).log(Level.SEVERE, null, ex);
+//            Logger.getLogger(Statusbar.class.getName()).log(Level.SEVERE, "Cound not fetch Username", ex);
         }
 
         if (name.isEmpty() && lastName.isEmpty()) {

@@ -32,6 +32,7 @@ import static javax.measure.unit.NonSI.MILE;
 import javax.measure.unit.SI;
 import static javax.measure.unit.SI.KILOMETER;
 import javax.measure.unit.Unit;
+import org.jevis.api.JEVisUnit;
 import org.jevis.commons.unit.UnitManager;
 
 /**
@@ -40,14 +41,14 @@ import org.jevis.commons.unit.UnitManager;
  */
 public class UnitChooserPanel {
 
-    private Unit _unit = Unit.ONE;
+    private JEVisUnit _unit = null;
     private TextField altSymbolField = new TextField("");
     private String _altSymbol = "";
     private ComboBox<?> boxMeaning = new ComboBox<Object>();
     private ComboBox<String> boxPrefix = new ComboBox<String>();
-    private ComboBox<Unit> boxQuantity = new ComboBox<Unit>();
-    private ComboBox<Unit> boxUnit = new ComboBox<Unit>();
-    private Label example = new Label("1234.45");
+    private ComboBox<JEVisUnit> boxQuantity = new ComboBox<JEVisUnit>();
+    private ComboBox<JEVisUnit> boxUnit = new ComboBox<JEVisUnit>();
+    private Label example = new Label("1234.56");
     private TextField searchField = new TextField();
     private GridPane root = new GridPane();
     private Label lQuantity = new Label("Quantity:");
@@ -58,7 +59,7 @@ public class UnitChooserPanel {
 
     private final UnitManager um = UnitManager.getInstance();
 
-    public UnitChooserPanel(Unit unit, String altSymbol) {
+    public UnitChooserPanel(JEVisUnit unit, String altSymbol) {
         _unit = unit;
         _altSymbol = altSymbol;
 
@@ -127,10 +128,10 @@ public class UnitChooserPanel {
     }
 
     private void addListeners() {
-        boxQuantity.valueProperty().addListener(new ChangeListener<Unit>() {
+        boxQuantity.valueProperty().addListener(new ChangeListener<JEVisUnit>() {
 
             @Override
-            public void changed(ObservableValue<? extends Unit> observable, Unit oldValue, Unit newValue) {
+            public void changed(ObservableValue<? extends JEVisUnit> observable, JEVisUnit oldValue, JEVisUnit newValue) {
                 fillUnits(newValue);
                 printExample();
             }
@@ -144,10 +145,10 @@ public class UnitChooserPanel {
             }
         });
 
-        boxUnit.valueProperty().addListener(new ChangeListener<Unit>() {
+        boxUnit.valueProperty().addListener(new ChangeListener<JEVisUnit>() {
 
             @Override
-            public void changed(ObservableValue<? extends Unit> observable, Unit oldValue, Unit newValue) {
+            public void changed(ObservableValue<? extends JEVisUnit> observable, JEVisUnit oldValue, JEVisUnit newValue) {
                 printExample();
             }
         });
@@ -160,9 +161,8 @@ public class UnitChooserPanel {
             System.out.println("Unit.one: " + Unit.ONE);
 
             if (_unit != null) {
-                boxQuantity.getSelectionModel().select(_unit.getStandardUnit());
-                boxUnit.getSelectionModel().select(_unit.getStandardUnit());
-                //TODO set Prefix, maybe we need to store this also seperate?
+//                boxQuantity.getSelectionModel().select(_unit.getStandardUnit());
+//                boxUnit.getSelectionModel().select(_unit.getStandardUnit());
 
                 if (_altSymbol != null && !_altSymbol.isEmpty()) {
                     altSymbolField.setText(_altSymbol);
@@ -171,8 +171,8 @@ public class UnitChooserPanel {
             } else {
                 System.out.println("no unit create new default unit");
                 Unit newUnit = Unit.ONE;
-                boxQuantity.getSelectionModel().select(newUnit.getStandardUnit());
-                boxUnit.getSelectionModel().select(newUnit.getStandardUnit());
+//                boxQuantity.getSelectionModel().select(newUnit.getStandardUnit());
+//                boxUnit.getSelectionModel().select(newUnit.getStandardUnit());
             }
 
         } catch (Exception ex) {
@@ -198,46 +198,40 @@ public class UnitChooserPanel {
         return type + " (" + s1 + ")";
     }
 
-    private void fillUnits(Unit unit) {
+    private void fillUnits(JEVisUnit unit) {
         System.out.println("fill units");
         boxUnit.setButtonCell(new UnitListCell());
-        boxUnit.setCellFactory(new Callback<ListView<Unit>, ListCell<Unit>>() {
+        boxUnit.setCellFactory(new Callback<ListView<JEVisUnit>, ListCell<JEVisUnit>>() {
             @Override
-            public ListCell<Unit> call(ListView<Unit> p) {
+            public ListCell<JEVisUnit> call(ListView<JEVisUnit> p) {
                 return new UnitListCell();
             }
         });
 
-        ObservableList<Unit> siList = FXCollections.observableList(um.getCompatibleSIUnit(unit));
-        ObservableList<Unit> nonSIList = FXCollections.observableList(um.getCompatibleNonSIUnit(unit));
-        ObservableList<Unit> addList = FXCollections.observableList(um.getCompatibleAdditionalUnit(unit));
-
-        boxUnit.getItems().clear();
-        boxUnit.getSelectionModel().clearSelection();
-
-        System.out.println("watt: " + SI.WATT);
-        System.out.println("Jule: " + SI.JOULE);
-        System.out.println("Wh: " + SI.WATT.times(NonSI.HOUR));
-        Unit kWh = SI.KILO(SI.WATT.times(NonSI.HOUR));
-        System.out.println("kWh1: " + kWh.getStandardUnit());
-        System.out.println("kWh2: " + kWh.getDimension());
-        System.out.println("kWh3: " + SI.WATT.times(NonSI.HOUR).divide(NonSI.HOUR));
-
-        System.out.println("True1: " + kWh.isCompatible(SI.WATT));
-        System.out.println("True2: " + kWh.isCompatible(SI.JOULE));
-
-//        UnitConverter toKWH = SI.WATT.getConverterTo(kWh);
-//        System.out.println("toKWH: " + toKWH.convert(Measure.valueOf(100, SI.WATT).doubleValue(SI.WATT)));
-        System.out.println("kWh: " + kWh);
-        System.out.println("kWh.name: " + buildName("Energy", kWh));
-
-//        boxUnit.getItems().add(unit.getDimension().);
-        boxUnit.getItems().addAll(siList);
-//        boxQuantity.getItems().addAll(new Separator());
-        boxUnit.getItems().addAll(nonSIList);
-//        boxQuantity.getItems().addAll(new Separator());
-        boxUnit.getItems().addAll(addList);
-
+//        ObservableList<Unit> siList = FXCollections.observableList(um.getCompatibleSIUnit(unit));
+//        ObservableList<Unit> nonSIList = FXCollections.observableList(um.getCompatibleNonSIUnit(unit));
+//        ObservableList<Unit> addList = FXCollections.observableList(um.getCompatibleAdditionalUnit(unit));
+//
+//        boxUnit.getItems().clear();
+//        boxUnit.getSelectionModel().clearSelection();
+//
+//        System.out.println("watt: " + SI.WATT);
+//        System.out.println("Jule: " + SI.JOULE);
+//        System.out.println("Wh: " + SI.WATT.times(NonSI.HOUR));
+//        Unit kWh = SI.KILO(SI.WATT.times(NonSI.HOUR));
+//        System.out.println("kWh1: " + kWh.getStandardUnit());
+//        System.out.println("kWh2: " + kWh.getDimension());
+//        System.out.println("kWh3: " + SI.WATT.times(NonSI.HOUR).divide(NonSI.HOUR));
+//
+//        System.out.println("True1: " + kWh.isCompatible(SI.WATT));
+//        System.out.println("True2: " + kWh.isCompatible(SI.JOULE));
+//
+//        System.out.println("kWh: " + kWh);
+//        System.out.println("kWh.name: " + buildName("Energy", kWh));
+//
+//        boxUnit.getItems().addAll(siList);
+//        boxUnit.getItems().addAll(nonSIList);
+//        boxUnit.getItems().addAll(addList);
         boxUnit.getSelectionModel().selectFirst();
 
     }
@@ -255,9 +249,9 @@ public class UnitChooserPanel {
     private void fillQuantitys() {
         System.out.println("fill quantitys");
         boxQuantity.setButtonCell(new QuantitiesListCell());
-        boxQuantity.setCellFactory(new Callback<ListView<Unit>, ListCell<Unit>>() {
+        boxQuantity.setCellFactory(new Callback<ListView<JEVisUnit>, ListCell<JEVisUnit>>() {
             @Override
-            public ListCell<Unit> call(ListView<Unit> p) {
+            public ListCell<JEVisUnit> call(ListView<JEVisUnit> p) {
                 return new QuantitiesListCell();
             }
         });
@@ -265,15 +259,11 @@ public class UnitChooserPanel {
         ObservableList<Unit> favList = FXCollections.observableList(um.getFavoriteQuantitys());
         ObservableList<Unit> allList = FXCollections.observableList(um.getQuantities());
 
-//        gb.getChildren().remove(boxQuantity);
-//        boxQuantity = new ComboBox<>();
-//        gb.getChildren().add(boxQuantity);
         boxQuantity.getSelectionModel().clearSelection();
         boxQuantity.getItems().clear();
         boxQuantity.getSelectionModel().clearSelection();
-        boxQuantity.getItems().addAll(favList);
-//        boxQuantity.getItems().addAll(new Separator());
-        boxQuantity.getItems().addAll(allList);
+//        boxQuantity.getItems().addAll(favList);
+//        boxQuantity.getItems().addAll(allList);
 
         boxQuantity.getSelectionModel().selectFirst();
 
@@ -320,7 +310,7 @@ public class UnitChooserPanel {
 
         if (baseUnit != null) {
             if (prefixUnit != null && !prefixUnit.isEmpty()) {
-                return UnitManager.getInstance().getUnitWithPrefix(baseUnit, prefixUnit);
+//                return UnitManager.getInstance().getUnitWithPrefix(baseUnit, prefixUnit);
             } else {
                 return baseUnit;
             }
@@ -328,6 +318,8 @@ public class UnitChooserPanel {
             return Unit.ONE;
         }
 
+        //TODO workaround remove this or the whole class
+        return null;
     }
 
     public String getAlternativSysbol() {
@@ -344,26 +336,27 @@ public class UnitChooserPanel {
             boxUnit.getSelectionModel().selectFirst();
 
             System.out.println("standart Unit: " + searchUnit.getStandardUnit());
-            Iterator<Unit> iterator = boxQuantity.getItems().iterator();
+            Iterator<JEVisUnit> iterator = boxQuantity.getItems().iterator();
             while (iterator.hasNext()) {
                 Object obj = iterator.next();
                 if (obj instanceof Unit) {
-                    Unit unit = (Unit) obj;
-                    if (unit.getStandardUnit().equals(searchUnit)) {
-                        System.out.println("found unit");
-                        boxQuantity.getSelectionModel().select(unit);
-
-                        Iterator<Unit> iterator2 = boxUnit.getItems().iterator();
-                        while (iterator2.hasNext()) {
-                            Object obj2 = iterator2.next();
-                            if (obj2 instanceof Unit) {
-                                Unit unit2 = (Unit) obj2;
-                                if (unit2.equals(searchUnit)) {
-                                    boxUnit.getSelectionModel().select(unit2);
-                                }
-                            }
-                        }
-                    }
+                    //TOTO: disabled because of unit change
+//                    JEVisUnit unit = (JEVisUnit) obj;
+//                    if (unit.getStandardUnit().equals(searchUnit)) {
+//                        System.out.println("found unit");
+//                        boxQuantity.getSelectionModel().select(unit);
+//
+//                        Iterator<JEVisUnit> iterator2 = boxUnit.getItems().iterator();
+//                        while (iterator2.hasNext()) {
+//                            Object obj2 = iterator2.next();
+//                            if (obj2 instanceof Unit) {
+//                                Unit unit2 = (Unit) obj2;
+//                                if (unit2.equals(searchUnit)) {
+//                                    boxUnit.getSelectionModel().select(unit2);
+//                                }
+//                            }
+//                        }
+//                    }
                 }
             }
             searchField.setStyle("-fx-text-fill: black;");
@@ -377,10 +370,10 @@ public class UnitChooserPanel {
 
     }
 
-    class UnitListCell extends ListCell<Unit> {
+    class UnitListCell extends ListCell<JEVisUnit> {
 
         @Override
-        protected void updateItem(Unit item, boolean empty) {
+        protected void updateItem(JEVisUnit item, boolean empty) {
             super.updateItem(item, empty);
 
             if (item instanceof Unit) {
@@ -392,16 +385,16 @@ public class UnitChooserPanel {
         }
     }
 
-    class QuantitiesListCell extends ListCell<Unit> {
+    class QuantitiesListCell extends ListCell<JEVisUnit> {
 
         @Override
-        protected void updateItem(Unit item, boolean empty) {
+        protected void updateItem(JEVisUnit item, boolean empty) {
             super.updateItem(item, empty);
 
-            if (item instanceof Unit) {
-                String label = String.format("%s", UnitManager.getInstance().getQuantitiesName((Unit) item, Locale.ENGLISH));
+            if (item instanceof JEVisUnit) {
+                String label = item.getLabel();
+//                String label = String.format("%s", UnitManager.getInstance().getQuantitiesName((JEVisUnit) item, Locale.ENGLISH));
                 setText(label);
-//                setText(UnitManager.getInstance().getQuantitiesName((Unit) item, Locale.getDefault()));
             }
 
         }

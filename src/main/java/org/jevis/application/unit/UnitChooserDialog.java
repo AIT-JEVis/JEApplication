@@ -41,10 +41,10 @@ import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javax.measure.unit.Unit;
 import org.jevis.api.JEVisAttribute;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisType;
+import org.jevis.api.JEVisUnit;
 import org.jevis.application.resource.ResourceLoader;
 
 /**
@@ -58,7 +58,7 @@ public class UnitChooserDialog {
         OK, CANCEL
     };
     private Response response = Response.CANCEL;
-    private Unit returnUnit;
+    private JEVisUnit returnUnit;
     private String altSysbol;
 
     public UnitChooserDialog() {
@@ -72,7 +72,7 @@ public class UnitChooserDialog {
         return showSelector(owner, type.getUnit(), type.getAlternativSymbol());
     }
 
-    public Unit getUnit() {
+    public JEVisUnit getUnit() {
         System.out.println("return  Unit: " + returnUnit);
         return returnUnit;
     }
@@ -106,7 +106,7 @@ public class UnitChooserDialog {
         return header;
     }
 
-    public Response showSelector(Stage owner, final Unit unit, String altSysmbol) {
+    public Response showSelector(Stage owner, final JEVisUnit unit, String altSysmbol) {
         final Stage stage = new Stage();
         returnUnit = unit;
 
@@ -165,7 +165,7 @@ public class UnitChooserDialog {
                 stage.close();
 //                isOK.setValue(true);
                 response = UnitChooserDialog.Response.OK;
-                returnUnit = chooser.getFinalUnit();
+//                returnUnit = chooser.getFinalUnit();//TODO
                 altSysbol = chooser.getAlternativSysbol();
             }
         });

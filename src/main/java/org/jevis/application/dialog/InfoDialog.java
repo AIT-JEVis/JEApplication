@@ -57,6 +57,14 @@ public class InfoDialog {
 
     private Response response = Response.OK;
 
+    /**
+     *
+     * @param owner
+     * @param title
+     * @param titleLong
+     * @param message
+     * @return
+     */
     public Response show(Stage owner, String title, String titleLong, String message) {
         final Stage stage = new Stage();
 
