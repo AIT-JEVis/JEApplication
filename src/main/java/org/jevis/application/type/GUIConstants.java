@@ -23,10 +23,12 @@ public class GUIConstants {
     public static DisplayType BASIC_FILER = new DisplayType("File Selector", JEVisConstants.PrimitiveType.FILE);
     public static DisplayType BASIC_BOOLEAN = new DisplayType("Check Box", JEVisConstants.PrimitiveType.BOOLEAN);
     public static DisplayType PASSWORD_PBKDF2 = new DisplayType("Password PBKDF2", JEVisConstants.PrimitiveType.PASSWORD_PBKDF2);
+    public static DisplayType BASIC_TEXT_MULTI = new DisplayType("Text Area", JEVisConstants.PrimitiveType.STRING);
 
     public static List<DisplayType> ALL = new ArrayList<DisplayType>() {
         {
             add(BASIC_TEXT);
+            add(BASIC_TEXT_MULTI);
             add(BASIC_NUMBER);
             add(NUMBER_WITH_UNIT);
             add(BASIC_FILER);
