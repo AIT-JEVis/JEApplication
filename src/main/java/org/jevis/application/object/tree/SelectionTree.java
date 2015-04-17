@@ -99,7 +99,23 @@ public class SelectionTree extends TreeView<ObjectContainer> {
             setCellFactory(new Callback<TreeView<ObjectContainer>, TreeCell<ObjectContainer>>() {
                 @Override
                 public TreeCell<ObjectContainer> call(TreeView<ObjectContainer> p) {
-                    return new ObjectCell();
+                    return new ObjectCell() {
+
+                        @Override
+                        protected void updateItem(ObjectContainer obj, boolean emty) {
+                            super.updateItem(obj, emty); //To change body of generated methods, choose Tools | Templates.
+                            if (!emty) {
+                                ObjectGraphic grapthi = getObjectGraphic(obj);
+                                setGraphic(grapthi.getGraphic());
+                            } else {
+                                setGraphic(null);
+                                setText(null);
+                            }
+
+                        }
+
+                    };
+
                 }
             });
 
