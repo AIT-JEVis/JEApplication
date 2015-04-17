@@ -94,7 +94,23 @@ public class UnitTree extends TreeView<UnitObject> {
             setCellFactory(new Callback<TreeView<UnitObject>, TreeCell<UnitObject>>() {
                 @Override
                 public TreeCell<UnitObject> call(TreeView<UnitObject> p) {
-                    return new ObjectCell();
+                    return new ObjectCell() {
+
+                        @Override
+                        protected void updateItem(UnitObject item, boolean emty) {
+                            super.updateItem(item, emty); //To change body of generated methods, choose Tools | Templates.
+                            if (!emty) {
+                                UnitGraphic gc = getObjectGraphic(item);
+//                                setText(item);
+                                setGraphic(gc.getGraphic());
+
+                            } else {
+                                setText(null);
+                                setGraphic(null);
+                            }
+                        }
+
+                    };
                 }
             });
 
@@ -306,7 +322,7 @@ public class UnitTree extends TreeView<UnitObject> {
 //                    try {
 //                        //TODo check for uniq
 ////                if(!dia.getCreateClass().isUnique()){
-////                    
+////
 ////                }
 //                        String name = dia.getCreateName();
 //                        if (dia.getCreateCount() > 1) {
