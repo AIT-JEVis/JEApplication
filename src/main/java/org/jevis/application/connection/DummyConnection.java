@@ -28,14 +28,14 @@ public class DummyConnection {
     public void connect() {
         JEVisDataSourceSQL ds = null;
         try {
-            ds = new JEVisDataSourceSQL("openjevis.org", "3306", "jevis", "jevis", "jevistest", null, null);
+            ds = new JEVisDataSourceSQL("openjevis.org", "3306", "jevis", "jevis", "jevistest");
         } catch (JEVisException e) {
             System.out.println("DEFINE DATASOURCE FAILURE");
             e.printStackTrace();
         }
 
         if (ds != null) {
-            if (ds.connectToDB()) {
+            if (ds.connectDB()) {
                 System.out.println("DB CONNECTION ESTABLISHED");
             }
         }

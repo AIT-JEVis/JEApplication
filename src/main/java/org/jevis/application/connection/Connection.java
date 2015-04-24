@@ -45,9 +45,7 @@ public class Connection {
                     data.getPort().getValueSafe(),
                     data.getDb().getValueSafe(),
                     data.getDbUser().getValueSafe(),
-                    data.getDbPass().getValueSafe(),
-                    null,
-                    null);
+                    data.getDbPass().getValueSafe());
             data.setStatus(ConnectionData.DEFINED);
         } catch (JEVisException e) {
             //TODO log
@@ -62,9 +60,9 @@ public class Connection {
             // Connect to DB
             System.out.println("CONNECT DB");
 
-	//		System.out.println(ds.ge);
+            //		System.out.println(ds.ge);
             data.setStatus(ConnectionData.CONNECTING);
-            if (ds.connectToDB()) {
+            if (ds.connectDB()) {
                 data.setStatus(ConnectionData.CONNECTED);
                 System.out.println("CONNECTED TO DB");
             } else {
