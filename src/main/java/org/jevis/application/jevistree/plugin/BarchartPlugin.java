@@ -20,6 +20,7 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ColorPicker;
@@ -29,6 +30,7 @@ import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.jevis.api.JEVisAttribute;
 import org.jevis.api.JEVisClass;
@@ -36,8 +38,7 @@ import org.jevis.api.JEVisDataSource;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisSample;
-import static org.jevis.application.jevistree.ColumnFactory.COLOR;
-import static org.jevis.application.jevistree.ColumnFactory.SELECT_OBJECT;
+import org.jevis.api.JEVisUnit;
 import org.jevis.application.jevistree.JEVisTree;
 import org.jevis.application.jevistree.JEVisTreeRow;
 import org.jevis.application.jevistree.TreePlugin;
@@ -89,8 +90,9 @@ public class BarchartPlugin implements TreePlugin {
         TreeTableColumn<JEVisTreeRow, JEVisObject> dataProcessorColumn = buildDataPorcessorColumn(_tree, "Cleaning");
         TreeTableColumn<JEVisTreeRow, DateTime> startDateColumn = buildDateColumn(_tree, "Start Date", DATE_TYPE.START);
         TreeTableColumn<JEVisTreeRow, DateTime> endDateColumn = buildDateColumn(_tree, "End Date", DATE_TYPE.END);
+        TreeTableColumn<JEVisTreeRow, JEVisUnit> unitColumn = buildUnitColumn(_tree, "Unit");
 
-        column.getColumns().addAll(colorColumn, aggregationColumn, dataProcessorColumn, startDateColumn, endDateColumn, selectColumn);
+        column.getColumns().addAll(selectColumn, colorColumn, aggregationColumn, dataProcessorColumn, startDateColumn, endDateColumn, unitColumn);
 
         list.add(column);
 
@@ -675,6 +677,98 @@ public class BarchartPlugin implements TreePlugin {
 
     }
 
+    private TreeTableColumn<JEVisTreeRow, JEVisUnit> buildUnitColumn(JEVisTree tree, String columnName) {
+        TreeTableColumn<JEVisTreeRow, JEVisUnit> column = new TreeTableColumn(columnName);
+        column.setPrefWidth(60);
+        column.setEditable(true);
+
+        //replace to use the datamodel
+//        column.setCellValueFactory((TreeTableColumn.CellDataFeatures<SelectionTreeRow, Boolean> param) -> param.getValue().getValue().getObjectSelecedProperty());
+        column.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<JEVisTreeRow, JEVisUnit>, ObservableValue<JEVisUnit>>() {
+
+            @Override
+            public ObservableValue<JEVisUnit> call(TreeTableColumn.CellDataFeatures<JEVisTreeRow, JEVisUnit> param) {
+                DataModel data = getData(param.getValue().getValue());
+                return new ReadOnlyObjectWrapper<>(data.getUnit());
+            }
+        });
+
+        column.setCellFactory(new Callback<TreeTableColumn<JEVisTreeRow, JEVisUnit>, TreeTableCell<JEVisTreeRow, JEVisUnit>>() {
+
+            @Override
+            public TreeTableCell<JEVisTreeRow, JEVisUnit> call(TreeTableColumn<JEVisTreeRow, JEVisUnit> param) {
+
+                TreeTableCell<JEVisTreeRow, JEVisUnit> cell = new TreeTableCell<JEVisTreeRow, JEVisUnit>() {
+
+                    @Override
+                    public void commitEdit(JEVisUnit newValue) {
+                        super.commitEdit(newValue);
+                        DataModel data = getData(getTreeTableRow().getItem());
+                        data.setUnit(newValue);
+                    }
+
+                    @Override
+                    protected void updateItem(JEVisUnit item, boolean empty) {
+                        super.updateItem(item, empty); //To change body of generated methods, choose Tools | Templates.
+                        if (!empty) {
+                            StackPane hbox = new StackPane();
+                            Button unitButton = new Button();
+                            unitButton.setPrefWidth(50);
+
+                            if (getTreeTableRow().getItem() != null && tree != null && tree.getFilter().showColumn(getTreeTableRow().getItem(), columnName)) {
+
+                                DataModel data = getData(getTreeTableRow().getItem());
+
+                                if (data.getUnit() != null) {
+                                    unitButton.setText(data.getUnit().toString());
+                                }
+
+                                hbox.getChildren().setAll(unitButton);
+                                StackPane.setAlignment(unitButton, Pos.CENTER_LEFT);
+
+                                unitButton.setOnAction(new EventHandler<ActionEvent>() {
+
+                                    @Override
+                                    public void handle(ActionEvent event) {
+                                        AttributeSettingsDialog dialog = new AttributeSettingsDialog();
+                                        try {
+                                            dialog.show((Stage) unitButton.getScene().getWindow(), data.getAttribute());
+                                            commitEdit(data.getAttribute().getDisplayUnit());
+                                            unitButton.setText(data.getAttribute().getDisplayUnit().toString());
+                                        } catch (JEVisException ex) {
+                                            Logger.getLogger(BarchartPlugin.class.getName()).log(Level.SEVERE, null, ex);
+                                        }
+
+                                    }
+                                });
+
+                                if (data.getAttribute() != null && data.getAttribute().hasSample()) {
+                                    unitButton.setDisable(false);
+                                } else {
+                                    unitButton.setDisable(true);
+                                }
+
+                            }
+
+                            setText(null);
+                            setGraphic(hbox);
+                        } else {
+                            setText(null);
+                            setGraphic(null);
+                        }
+
+                    }
+
+                };
+
+                return cell;
+            }
+        });
+
+        return column;
+
+    }
+
     public Map<String, BarchartPlugin.DataModel> getSelectedData() {
         return _data;
     }
@@ -692,8 +786,27 @@ public class BarchartPlugin implements TreePlugin {
         private JEVisObject _dataProcessorObject = null;
         private List<JEVisSample> samples = new ArrayList<>();
         private boolean _somethineChanged = true;
+        private JEVisUnit _unit;
 
         public DataModel() {
+        }
+
+        public JEVisUnit getUnit() {
+            try {
+                if (getAttribute() != null) {
+                    return getAttribute().getDisplayUnit();
+                }
+
+//            return _unit;
+            } catch (JEVisException ex) {
+                Logger.getLogger(BarchartPlugin.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return null;
+        }
+
+        public void setUnit(JEVisUnit _unit) {
+            _somethineChanged = true;
+            this._unit = _unit;
         }
 
         public List<JEVisSample> getSamples() {

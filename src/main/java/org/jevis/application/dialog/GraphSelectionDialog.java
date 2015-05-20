@@ -59,22 +59,50 @@ public class GraphSelectionDialog {
         OK, CANCEL
     };
     private Response _response = Response.CANCEL;
-    private Stage stage;
+
     private final JEVisDataSource _ds;
     private String ICON = "1404313956_evolution-tasks.png";
     Map<String, BarchartPlugin.DataModel> data = new HashMap<>();
+    Stage stage;
+    private boolean init = true;
+    VBox root = new VBox();
+    private JEVisTree _tree;
 
     public GraphSelectionDialog(JEVisDataSource ds) {
         _ds = ds;
     }
 
+    public JEVisTree getTree() {
+        if (!init) {
+            return _tree;
+        }
+
+        _tree = JEVisTreeFactory.buildDefaultGraphTree(_ds);
+        init = false;
+
+        return _tree;
+//        stage.showAndWait();
+    }
+
     public Response show(Stage owner) {
+        _response = Response.CANCEL;
+
+        if (stage != null) {
+            stage.close();
+            stage = null;
+        }
 
         stage = new Stage();
 
         stage.setTitle("Selection");
+
         stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initStyle(StageStyle.UTILITY);
         stage.initOwner(owner);
+
+        stage.setWidth(1124);
+        stage.setHeight(768);
+        stage.setResizable(false);
 
         VBox root = new VBox();
 
@@ -84,8 +112,9 @@ public class GraphSelectionDialog {
         Separator sep = new Separator(Orientation.HORIZONTAL);
 
         AnchorPane treePane = new AnchorPane();
-        JEVisTree tree = JEVisTreeFactory.buildDefaultGraphTree(_ds);
+//        JEVisTree tree =
 
+        JEVisTree tree = getTree();
         treePane.getChildren().setAll(tree);
         AnchorPane.setTopAnchor(tree, 0d);
         AnchorPane.setRightAnchor(tree, 0d);
@@ -107,14 +136,7 @@ public class GraphSelectionDialog {
         VBox.setVgrow(sep, Priority.NEVER);
         VBox.setVgrow(buttonBox, Priority.NEVER);
 
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setWidth(1124);
-        stage.setHeight(768);
-        stage.initStyle(StageStyle.UTILITY);
-        stage.setResizable(false);
 //        stage.getIcons().setAll(ResourceLoader.getImage(ICON, 64, 64).getImage());
-
         ok.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
@@ -129,28 +151,14 @@ public class GraphSelectionDialog {
                         BarchartPlugin bp = (BarchartPlugin) plugin;
 
                         data = bp.getSelectedData();
-
-//                        for (Map.Entry<String, BarchartPlugin.DataModel> entrySet : bp.getSelectedData().entrySet()) {
-//                            Object key = entrySet.getKey();
-//                            BarchartPlugin.DataModel value = entrySet.getValue();
-//
-//                            if (value.getSelected()) {
-//                                System.out.println("sample for " + key);
-//                                System.out.println("Color: " + value.getColor());
-//                                for (JEVisSample sample : value.getSamples()) {
-//                                    try {
-//                                        System.out.println(sample.getTimestamp() + "  " + sample.getValue());
-//                                    } catch (JEVisException ex) {
-//                                        Logger.getLogger(GraphSelectionDialog.class.getName()).log(Level.SEVERE, null, ex);
-//                                    }
-//                                }
-//                            }
-//                        }
                     }
                 }
                 stage.hide();
             }
         });
+
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
 
         stage.showAndWait();
 
