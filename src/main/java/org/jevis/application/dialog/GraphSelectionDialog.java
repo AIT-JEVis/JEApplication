@@ -55,17 +55,15 @@ import org.jevis.application.jevistree.plugin.BarchartPlugin;
 public class GraphSelectionDialog {
 
     public static enum Response {
-
         OK, CANCEL
     };
     private Response _response = Response.CANCEL;
 
     private final JEVisDataSource _ds;
-    private String ICON = "1404313956_evolution-tasks.png";
-    Map<String, BarchartPlugin.DataModel> data = new HashMap<>();
-    Stage stage;
+    private final String ICON = "1404313956_evolution-tasks.png";
+    private Map<String, BarchartPlugin.DataModel> data = new HashMap<>();
+    private Stage stage;
     private boolean init = true;
-    VBox root = new VBox();
     private JEVisTree _tree;
 
     public GraphSelectionDialog(JEVisDataSource ds) {
@@ -81,7 +79,6 @@ public class GraphSelectionDialog {
         init = false;
 
         return _tree;
-//        stage.showAndWait();
     }
 
     public Response show(Stage owner) {
@@ -112,7 +109,6 @@ public class GraphSelectionDialog {
         Separator sep = new Separator(Orientation.HORIZONTAL);
 
         AnchorPane treePane = new AnchorPane();
-//        JEVisTree tree =
 
         JEVisTree tree = getTree();
         treePane.getChildren().setAll(tree);
