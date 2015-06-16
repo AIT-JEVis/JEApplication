@@ -230,7 +230,6 @@ public class BarchartPlugin implements TreePlugin {
                 );
             }
         }
-        System.out.println("buildDatePicker1 " + ld);
 
         DatePicker dp = new DatePicker(ld);
 
@@ -910,6 +909,7 @@ public class BarchartPlugin implements TreePlugin {
 
         public void setSelected(boolean selected) {
             _selected = selected;
+            System.out.println("is selectec: " + _object.getName() + "   unit: " + getUnit());
         }
 
         public DateTime getSelectedStart() {
