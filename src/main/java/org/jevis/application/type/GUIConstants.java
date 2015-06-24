@@ -24,6 +24,7 @@ public class GUIConstants {
     public static DisplayType BASIC_BOOLEAN = new DisplayType("Check Box", JEVisConstants.PrimitiveType.BOOLEAN);
     public static DisplayType PASSWORD_PBKDF2 = new DisplayType("Password PBKDF2", JEVisConstants.PrimitiveType.PASSWORD_PBKDF2);
     public static DisplayType BASIC_TEXT_MULTI = new DisplayType("Text Area", JEVisConstants.PrimitiveType.STRING);
+    public static DisplayType BASIC_TEXT_DATE_FULL = new DisplayType("Date", JEVisConstants.PrimitiveType.STRING);
 
     public static List<DisplayType> ALL = new ArrayList<DisplayType>() {
         {
@@ -34,6 +35,7 @@ public class GUIConstants {
             add(BASIC_FILER);
             add(BASIC_BOOLEAN);
             add(PASSWORD_PBKDF2);
+            add(BASIC_TEXT_DATE_FULL);
         }
     };
 
