@@ -65,7 +65,7 @@ public class ConfirmDialog {
         final BooleanProperty isOK = new SimpleBooleanProperty(false);
 
         stage.setTitle(title);
-        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initModality(Modality.WINDOW_MODAL);
         stage.initOwner(owner);
 
 //        BorderPane root = new BorderPane();

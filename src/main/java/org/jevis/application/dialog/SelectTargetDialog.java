@@ -75,9 +75,9 @@ public class SelectTargetDialog {
         stage.setWidth(1024);
         stage.setHeight(768);
         stage.initStyle(StageStyle.UTILITY);
-        stage.setResizable(false);
+        stage.setResizable(true);
         stage.getIcons().setAll(ResourceLoader.getImage(ICON, 64, 64).getImage());
-
+        stage.setAlwaysOnTop(true);
         stage.showAndWait();
 
         return _response;
