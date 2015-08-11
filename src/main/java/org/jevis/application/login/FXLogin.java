@@ -285,7 +285,7 @@ public class FXLogin extends AnchorPane {
                     lastExeption = jex;
                     this.failed();
                     this.cancel();
-
+                    loginButton.setDisable(false);
                 }
                 return null;
             }
@@ -477,6 +477,7 @@ public class FXLogin extends AnchorPane {
             public void handle(ActionEvent event) {
                 System.out.println("Login!");
                 try {
+                    loginButton.setDisable(true);
                     doLogin();
 
                 } catch (JEVisException ex) {
