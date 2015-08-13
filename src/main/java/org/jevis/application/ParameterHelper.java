@@ -20,11 +20,12 @@
  */
 package org.jevis.application;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import javafx.application.Application;
-import org.jevis.api.JEVisConfiguration;
-import org.jevis.commons.config.BasicConfiguration;
-import org.jevis.commons.config.OptionFactory;
+import org.jevis.api.JEVisOption;
+import org.jevis.commons.config.BasicOption;
 
 /**
  * This class helps with common task relatet to the Application.Parameters.
@@ -36,22 +37,50 @@ public class ParameterHelper {
     /**
      * Converts parameters to an JEVisConfiguration object
      *
+     * @TODO: make it more flexible and save to parse multible level of Options
+     *
      * @param parameters
      * @return
      */
-    public static JEVisConfiguration ParseJEVisConfiguration(Application.Parameters parameters) {
-        JEVisConfiguration conf = new BasicConfiguration();
+    public static List<JEVisOption> ParseJEVisConfiguration(Application.Parameters parameters) {
+        List<JEVisOption> options = new ArrayList<>();
+
+        //quit a bad implementation has to be improved
         for (Map.Entry<String, String> entrySet : parameters.getNamed().entrySet()) {
             String[] keyGroup = entrySet.getKey().split("\\.", 2);
+            if (keyGroup.length == 1) {
+                JEVisOption newOpt = new BasicOption();
+                newOpt.setKey(keyGroup[0]);
+                newOpt.setValue(entrySet.getValue());
+                options.add(newOpt);
+            } else if (keyGroup.length > 1) {
+                JEVisOption newOpt = new BasicOption();
+                newOpt.setKey(keyGroup[0]);
+                newOpt.setValue(entrySet.getValue());
 
-            if (keyGroup.length > 1) {
-                conf.addOption(OptionFactory.BuildOption(keyGroup[0], keyGroup[1], entrySet.getValue(), "", true), true);
-            } else {
-                //Groupless option
-                conf.addOption(OptionFactory.BuildOption("", entrySet.getKey(), entrySet.getValue(), "", true), true);
+                for (JEVisOption oldOpt : options) {
+                    if (oldOpt.getKey().equals(keyGroup[0])) {
+                        newOpt = oldOpt;
+                    }
+                }
+
+                JEVisOption newOpt2 = new BasicOption();
+                newOpt2.setKey(keyGroup[1]);
+                newOpt2.setValue(entrySet.getValue());
+                for (JEVisOption oldOpt : options) {
+                    if (oldOpt.getKey().equals(keyGroup[0])) {
+                        newOpt = oldOpt;
+                    }
+                }
+                newOpt.addChildren(newOpt2, true);
+
+                if (!options.contains(newOpt)) {
+                    options.add(newOpt);
+                }
+
             }
         }
-        return conf;
+        return options;
     }
 
 }

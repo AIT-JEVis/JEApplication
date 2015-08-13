@@ -69,7 +69,6 @@ import javafx.util.Callback;
 import javafx.util.Duration;
 import org.controlsfx.control.PopOver;
 import org.jevis.api.JEVisClass;
-import org.jevis.api.JEVisConfiguration;
 import org.jevis.api.JEVisDataSource;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
@@ -100,7 +99,7 @@ public class FXLogin extends AnchorPane {
 //    private final Preferences serverPref = Preferences.userRoot().node("JEVis.Server");
     private List<JEVisObject> rootObjects = new ArrayList<>();
     private List<JEVisClass> classes = new ArrayList<>();
-    private final ComboBox<JEVisConfiguration> serverSelection = new ComboBox<>();
+//    private final ComboBox<JEVisConfiguration> serverSelection = new ComboBox<>();
     private String css = "";
 
     private int lastServer = -1;
@@ -112,8 +111,7 @@ public class FXLogin extends AnchorPane {
     private SimpleBooleanProperty loginStatus = new SimpleBooleanProperty(false);
 //    private final String URL_SYNTAX = "user:password@server:port/jevis";
 
-    private final ObservableList<JEVisConfiguration> serverConfigurations = FXCollections.observableList(new ArrayList<>());
-
+//    private final ObservableList<JEVisConfiguration> serverConfigurations = FXCollections.observableList(new ArrayList<>());
     private VBox mainHBox = new VBox();
     private ProgressIndicator progress = new ProgressIndicator(ProgressIndicator.INDETERMINATE_PROGRESS);
 
@@ -122,7 +120,9 @@ public class FXLogin extends AnchorPane {
 
     private Application.Parameters parameters;
 
-    private JEVisConfiguration configuration;
+    private List<JEVisOption> configuration;
+    private JEVisOption fxoptions;
+    private boolean useCSSFile = false;
 
     public interface Color {
 
@@ -150,6 +150,12 @@ public class FXLogin extends AnchorPane {
         this.parameters = parameters;
 
         configuration = parseConfig(parameters);
+        for (JEVisOption opt : configuration) {
+            if (opt.equals(CommonOptions.FXLogin.FXLogin)) {
+                fxoptions = opt;
+            }
+        }
+
         try {
             _ds = loadDataSource(configuration);
 
@@ -175,14 +181,17 @@ public class FXLogin extends AnchorPane {
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    private JEVisDataSource loadDataSource(JEVisConfiguration config) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-        if (config.hasOption(CommonOptions.DataSoure.CLASS.getGroup(), CommonOptions.DataSoure.CLASS.getKey())) {
-            DataSourceLoader dsl = new DataSourceLoader();
-            JEVisDataSource ds = dsl.getDataSource(config);
-            config.completeWith(ds.getConfiguration());
-            ds.setConfiguration(config);
-            return ds;
+    private JEVisDataSource loadDataSource(List<JEVisOption> config) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+        for (JEVisOption opt : config) {
+            if (opt.getKey().equals(CommonOptions.DataSoure.DataSoure.getKey())) {
+                DataSourceLoader dsl = new DataSourceLoader();
+                JEVisDataSource ds = dsl.getDataSource(opt);
+//            config.completeWith(ds.getConfiguration());
+                ds.setConfiguration(config);
+                return ds;
+            }
         }
+
         return null;
     }
 
@@ -191,11 +200,11 @@ public class FXLogin extends AnchorPane {
      */
     private void setStyleSheet() {
         try {
-
-            if (configuration.hasOption(CommonOptions.FXLogin.URL_CSS)) {
-                JEVisOption opt = configuration.getOption(CommonOptions.FXLogin.URL_CSS);
-                if (opt.getValue() != null && !opt.getValue().isEmpty()) {
+            if (fxoptions != null) {
+                if (fxoptions.hasChildren(CommonOptions.FXLogin.URL_CSS.getKey())) {
+                    JEVisOption opt = fxoptions.getChildren(CommonOptions.FXLogin.URL_CSS.getKey());
                     mainStage.getScene().getStylesheets().add(opt.getValue());
+                    useCSSFile = true;
                 }
             }
 
@@ -210,8 +219,8 @@ public class FXLogin extends AnchorPane {
      * @param parameter
      * @return
      */
-    private JEVisConfiguration parseConfig(Application.Parameters parameter) {
-        JEVisConfiguration config = ParameterHelper.ParseJEVisConfiguration(parameter);
+    private List<JEVisOption> parseConfig(Application.Parameters parameter) {
+        List<JEVisOption> config = ParameterHelper.ParseJEVisConfiguration(parameter);
         return config;
     }
 
@@ -348,7 +357,7 @@ public class FXLogin extends AnchorPane {
     }
 
     private void setDefaultStyle(Node node, String style) {
-        if (!configuration.hasOption(CommonOptions.FXLogin.URL_CSS)) {
+        if (!useCSSFile) {
             node.setStyle(style);
         }
     }
@@ -367,16 +376,18 @@ public class FXLogin extends AnchorPane {
 
         String defaultLogo = "/icons/openjevis_longlogo.png";
 
-        if (configuration.hasOption(CommonOptions.FXLogin.URL_LOGO)) {
-            JEVisOption opt = configuration.getOption(CommonOptions.FXLogin.URL_LOGO);
-            if (opt.getValue() != null && !opt.getValue().isEmpty()) {
-                try {
-                    logo = new ImageView(new Image(opt.getValue()));
-                } catch (Exception ex) {
+        if (fxoptions != null) {
+            if (fxoptions.hasChildren(CommonOptions.FXLogin.URL_LOGO.getKey())) {
+                JEVisOption opt = fxoptions.getChildren(CommonOptions.FXLogin.URL_LOGO.getKey());
+                if (opt.getValue() != null && !opt.getValue().isEmpty()) {
+                    try {
+                        logo = new ImageView(new Image(opt.getValue()));
+                    } catch (Exception ex) {
+                        logo = new ImageView(new Image(defaultLogo));
+                    }
+                } else {
                     logo = new ImageView(new Image(defaultLogo));
                 }
-            } else {
-                logo = new ImageView(new Image(defaultLogo));
             }
         } else {
             logo = new ImageView(new Image(defaultLogo));
@@ -667,14 +678,13 @@ public class FXLogin extends AnchorPane {
         serverConfigPop.setHideOnEscape(true);
         serverConfigPop.setAutoFix(true);
 
-        serverSelection.setItems(serverConfigurations);
-        serverSelection.getSelectionModel().selectFirst();
-
+//        serverSelection.setItems(serverConfigurations);
+//        serverSelection.getSelectionModel().selectFirst();
         HBox serverConfBox = new HBox(10);
-        serverConfBox.getChildren().setAll(serverSelection, configureServer);
+//        serverConfBox.getChildren().setAll(serverSelection, configureServer);
 
         HBox.setHgrow(configureServer, Priority.NEVER);
-        HBox.setHgrow(serverSelection, Priority.ALWAYS);
+//        HBox.setHgrow(serverSelection, Priority.ALWAYS);
 
         ok.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -793,17 +803,20 @@ public class FXLogin extends AnchorPane {
 
         final String url;
 
-        if (configuration.hasOption(CommonOptions.FXLogin.URL_REGISTER)) {
-
-            if (configuration.getOption(CommonOptions.FXLogin.URL_REGISTER).getValue().equals("off")) {
-                link.setText("");
-                link.setVisible(false);
-                url = "";
+        if (fxoptions != null) {
+            if (fxoptions.hasChildren(CommonOptions.FXLogin.URL_REGISTER.getKey())) {
+                JEVisOption opt = fxoptions.getChildren(CommonOptions.FXLogin.URL_REGISTER.getKey());
+                if (opt.getValue().equals("off")) {
+                    link.setText("");
+                    link.setVisible(false);
+                    url = "";
+                } else {
+                    url = opt.getValue();
+                }
             } else {
-                url = configuration.getOption(CommonOptions.FXLogin.URL_REGISTER).getValue();
+                url = "http://openjevis.org/account/register";
             }
         } else {
-            //Default
             url = "http://openjevis.org/account/register";
 
         }
