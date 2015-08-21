@@ -72,7 +72,7 @@ public class ParameterHelper {
                         newOpt = oldOpt;
                     }
                 }
-                newOpt.addChildren(newOpt2, true);
+                newOpt.addOption(newOpt2, true);
 
                 if (!options.contains(newOpt)) {
                     options.add(newOpt);

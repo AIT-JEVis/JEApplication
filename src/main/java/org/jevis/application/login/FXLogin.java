@@ -201,8 +201,8 @@ public class FXLogin extends AnchorPane {
     private void setStyleSheet() {
         try {
             if (fxoptions != null) {
-                if (fxoptions.hasChildren(CommonOptions.FXLogin.URL_CSS.getKey())) {
-                    JEVisOption opt = fxoptions.getChildren(CommonOptions.FXLogin.URL_CSS.getKey());
+                if (fxoptions.hasOption(CommonOptions.FXLogin.URL_CSS.getKey())) {
+                    JEVisOption opt = fxoptions.getOption(CommonOptions.FXLogin.URL_CSS.getKey());
                     mainStage.getScene().getStylesheets().add(opt.getValue());
                     useCSSFile = true;
                 }
@@ -377,8 +377,8 @@ public class FXLogin extends AnchorPane {
         String defaultLogo = "/icons/openjevis_longlogo.png";
 
         if (fxoptions != null) {
-            if (fxoptions.hasChildren(CommonOptions.FXLogin.URL_LOGO.getKey())) {
-                JEVisOption opt = fxoptions.getChildren(CommonOptions.FXLogin.URL_LOGO.getKey());
+            if (fxoptions.hasOption(CommonOptions.FXLogin.URL_LOGO.getKey())) {
+                JEVisOption opt = fxoptions.getOption(CommonOptions.FXLogin.URL_LOGO.getKey());
                 if (opt.getValue() != null && !opt.getValue().isEmpty()) {
                     try {
                         logo = new ImageView(new Image(opt.getValue()));
@@ -804,8 +804,8 @@ public class FXLogin extends AnchorPane {
         final String url;
 
         if (fxoptions != null) {
-            if (fxoptions.hasChildren(CommonOptions.FXLogin.URL_REGISTER.getKey())) {
-                JEVisOption opt = fxoptions.getChildren(CommonOptions.FXLogin.URL_REGISTER.getKey());
+            if (fxoptions.hasOption(CommonOptions.FXLogin.URL_REGISTER.getKey())) {
+                JEVisOption opt = fxoptions.getOption(CommonOptions.FXLogin.URL_REGISTER.getKey());
                 if (opt.getValue().equals("off")) {
                     link.setText("");
                     link.setVisible(false);
