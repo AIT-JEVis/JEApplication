@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014 Envidatec GmbH <info@envidatec.com>
+ * Copyright (C) 2014-2015 Envidatec GmbH <info@envidatec.com>
  *
  * This file is part of JEApplication.
  *
@@ -38,8 +38,15 @@ import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import org.jevis.api.JEVisDataSource;
 import org.jevis.api.JEVisException;
+import org.jevis.api.JEVisOption;
 import org.jevis.application.resource.ResourceLoader;
+import org.jevis.commons.config.CommonOptions;
 
+/**
+ * Status bar with user and connection infos.
+ *
+ * @author Florian Simon
+ */
 public class Statusbar extends ToolBar {
 
     private final int ICON_SIZE = 20;
@@ -85,6 +92,20 @@ public class Statusbar extends ToolBar {
 
         //TODO implement notification
         root.getChildren().addAll(userIcon, userName, spacer, conBox, onlineInfo);
+
+        String sinfo = "";
+
+        for (JEVisOption opt : ds.getConfiguration()) {
+            if (opt.getKey().equals(CommonOptions.DataSoure.DataSoure.getKey())) {
+                for (JEVisOption dsOption : opt.getOptions()) {
+                    sinfo += dsOption.getKey() + ": " + dsOption.getValue() + "\n";
+                }
+            }
+        }
+
+        Tooltip serverTip = new Tooltip("Connection Info:\n"
+                + sinfo);
+        onlineInfo.setTooltip(serverTip);
 
         HBox.setHgrow(root, Priority.ALWAYS);
         getItems().add(root);

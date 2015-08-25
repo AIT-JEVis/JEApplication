@@ -244,24 +244,6 @@ public class FXLogin extends AnchorPane {
     }
 
     /**
-     * Internal helper which for the time JavaFX had no Dialogs. Now it has so
-     * we can replace this.
-     *
-     * @deprecated
-     * @param ex
-     * @return
-     */
-    private Alert buildAlarm(Exception ex) {
-
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText(ex.getMessage());
-
-        return alert;
-
-    }
-
-    /**
      * This function will try to connect to the JEVisDataSource with the
      * configures server settings.
      *
@@ -272,30 +254,14 @@ public class FXLogin extends AnchorPane {
         Task<Void> loginTask = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                try {
+//                try {
 
-//                    System.out.println("Login: " + _ds + " userName: " + userName.getText() + " pass: " + userPassword.getText());
-//                    System.out.println("Config:" + _ds.getConfiguration().toString());
-                    if (_ds.connect(userName.getText(), userPassword.getText())) {
-                        classes = _ds.getJEVisClasses();
-                        rootObjects = _ds.getRootObjects();
-                        this.succeeded();
-                    }
-
-                } catch (Exception jex) {
-                    jex.printStackTrace();
-
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error");
-                    alert.setHeaderText(jex.getMessage());
-//                    alert.setContentText(Arrays.toString(jex.getStackTrace()));
-                    alert.showAndWait();
-
-                    lastExeption = jex;
-                    this.failed();
-                    this.cancel();
-                    loginButton.setDisable(false);
+                if (_ds.connect(userName.getText(), userPassword.getText())) {
+                    classes = _ds.getJEVisClasses();
+                    rootObjects = _ds.getRootObjects();
+                    this.succeeded();
                 }
+
                 return null;
             }
         };
@@ -303,7 +269,6 @@ public class FXLogin extends AnchorPane {
         loginTask.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
             @Override
             public void handle(WorkerStateEvent event) {
-                System.out.println("loginTask.sucess");
 //                SimpleServerConfig serverConfig = serverSelection.getSelectionModel().getSelectedItem();
 //                serverConfig.save();
 
@@ -320,22 +285,27 @@ public class FXLogin extends AnchorPane {
 
             @Override
             public void handle(WorkerStateEvent event) {
-                System.out.println("faild");
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Error while connection to the JEVis Server");
+                alert.setContentText(event.getSource().getException().getMessage());
+                alert.showAndWait();
 
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
+//                        System.out.println("reenable gui");
+                        loginButton.setDisable(false);
                         authGrid.setDisable(false);
-                        statusDialog.hide();
+//                        statusDialog.hide();
                         progress.setVisible(false);
                     }
                 });
-                Alert alart = buildAlarm(lastExeption);
-                alart.showAndWait();
 
             }
         };
-        loginTask.setOnCancelled(faildEvent);
+//        loginTask.setOnCancelled(faildEvent);
+        loginTask.setOnFailed(faildEvent);
 
         Platform.runLater(new Runnable() {
             @Override
