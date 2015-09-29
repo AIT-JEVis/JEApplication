@@ -97,7 +97,7 @@ public class Statusbar extends ToolBar {
         String sinfo = "";
 
         for (JEVisOption opt : ds.getConfiguration()) {
-            if (opt.getKey().equals(CommonOptions.DataSoure.DataSoure.getKey())) {
+            if (opt.getKey().equals(CommonOptions.DataSource.DataSource.getKey())) {
                 for (JEVisOption dsOption : opt.getOptions()) {
                     sinfo += dsOption.getKey() + ": " + dsOption.getValue() + "\n";
                 }
