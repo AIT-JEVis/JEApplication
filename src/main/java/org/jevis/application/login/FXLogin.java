@@ -183,7 +183,7 @@ public class FXLogin extends AnchorPane {
      */
     private JEVisDataSource loadDataSource(List<JEVisOption> config) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         for (JEVisOption opt : config) {
-            if (opt.getKey().equals(CommonOptions.DataSoure.DataSoure.getKey())) {
+            if (opt.getKey().equals(CommonOptions.DataSource.DataSource.getKey())) {
                 DataSourceLoader dsl = new DataSourceLoader();
                 JEVisDataSource ds = dsl.getDataSource(opt);
 //            config.completeWith(ds.getConfiguration());
