@@ -39,6 +39,7 @@ import javafx.scene.paint.Color;
 import org.jevis.api.JEVisDataSource;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisOption;
+import org.jevis.api.sql.JEVisDataSourceSQL;
 import org.jevis.application.resource.ResourceLoader;
 import org.jevis.commons.config.CommonOptions;
 
@@ -102,6 +103,14 @@ public class Statusbar extends ToolBar {
                 }
             }
         }
+
+        if (ds instanceof JEVisDataSourceSQL) {
+            JEVisDataSourceSQL dsSQL = (JEVisDataSourceSQL) ds;
+            sinfo += "Request Count: " + dsSQL.getCount();
+
+        }
+
+        sinfo += "\nMemory usage: " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() / 1024) + " mb";
 
         Tooltip serverTip = new Tooltip("Connection Info:\n"
                 + sinfo);
