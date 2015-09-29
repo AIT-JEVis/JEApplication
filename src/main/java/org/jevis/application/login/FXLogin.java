@@ -456,7 +456,6 @@ public class FXLogin extends AnchorPane {
 
             @Override
             public void handle(ActionEvent event) {
-                System.out.println("Login!");
                 try {
                     loginButton.setDisable(true);
                     doLogin();
@@ -842,7 +841,6 @@ public class FXLogin extends AnchorPane {
      * find a better solution but the JEVisDataSource needs an plaintext pw.
      */
     private void storePreference() {
-        System.out.println("save to disk");
         final String jevisUser = userName.getText();
         final String jevisPW = userPassword.getText();
 
