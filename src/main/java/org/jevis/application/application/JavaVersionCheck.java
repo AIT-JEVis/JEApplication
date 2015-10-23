@@ -40,7 +40,7 @@ public class JavaVersionCheck {
         String[] split = version.split("\\.");
         int first = Integer.parseInt(split[0]);
         int majorV = Integer.parseInt(split[1]);
-        int patch = Integer.parseInt(split[2].split("_")[1]);
+        int patch = Integer.parseInt((split[2].split("_")[1]).replaceAll("[^\\d.]", ""));
 
         if (majorV == 7 && patch >= 55) {
             versionK = true;
