@@ -187,7 +187,7 @@ public class UnitTree extends TreeView<UnitObject> {
 
         } else if (item.getValue().getType() == UnitObject.Type.Quntity) {
             if (item.getValue().getID().equals("Custom")) {
-                System.out.println("add Cutom subunits");
+                System.out.println("add Custom subunits");
                 for (JEVisUnit child : UnitManager.getInstance().getCustomUnits()) {
                     UnitObject customUnit = new UnitObject(UnitObject.Type.NonSIUnit, child, item.getValue().getID() + child.toString());
                     TreeItem<UnitObject> newItem = buildItem(customUnit);
