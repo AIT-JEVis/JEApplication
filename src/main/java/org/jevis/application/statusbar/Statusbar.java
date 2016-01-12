@@ -20,12 +20,13 @@
  */
 package org.jevis.application.statusbar;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ObservableBooleanValue;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -83,7 +84,6 @@ public class Statusbar extends ToolBar {
 
         conBox.getChildren().setAll(connectIcon);
 
-        Label serverL = new Label("Server");
         Pane spacer = new Pane();
         spacer.setMaxWidth(Integer.MAX_VALUE);
 
@@ -109,8 +109,10 @@ public class Statusbar extends ToolBar {
             sinfo += "Request Count: " + dsSQL.getCount();
 
         }
+        NumberFormat numberFormate = DecimalFormat.getNumberInstance(java.util.Locale.getDefault());
+        double memNumber = ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024);
 
-        sinfo += "\nMemory usage: " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() / 1024) + " mb";
+        sinfo += "\nMemory usage: " + numberFormate.format(memNumber) + " mb";
 
         Tooltip serverTip = new Tooltip("Connection Info:\n"
                 + sinfo);

@@ -42,12 +42,13 @@ import org.jevis.api.JEVisUnit;
 import org.jevis.application.jevistree.JEVisTree;
 import org.jevis.application.jevistree.JEVisTreeRow;
 import org.jevis.application.jevistree.TreePlugin;
-import org.jevis.commons.dataprocessing.Options;
-import org.jevis.commons.dataprocessing.ProcessorObjectHandler;
-import org.jevis.commons.dataprocessing.Task;
-import org.jevis.commons.dataprocessing.TaskImp;
-import org.jevis.commons.dataprocessing.processor.AggrigatorProcessor;
-import org.jevis.commons.dataprocessing.processor.InputProcessor;
+import org.jevis.commons.dataprocessing.BasicProcessOption;
+import org.jevis.commons.dataprocessing.ProcessOptions;
+import org.jevis.commons.dataprocessing.ProcessChains;
+import org.jevis.commons.dataprocessing.Process;
+import org.jevis.commons.dataprocessing.BasicProcess;
+import org.jevis.commons.dataprocessing.function.AggrigatorFunction;
+import org.jevis.commons.dataprocessing.function.InputFunction;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 
@@ -780,7 +781,7 @@ public class BarchartPlugin implements TreePlugin {
         private JEVisAttribute _attribute;
         private Color _color = Color.LIGHTBLUE;
         private boolean _selected = false;
-        private Task _task = null;
+        private Process _task = null;
         private AGGREGATION aggrigation = AGGREGATION.None;
         private JEVisObject _dataProcessorObject = null;
         private List<JEVisSample> samples = new ArrayList<>();
@@ -817,49 +818,56 @@ public class BarchartPlugin implements TreePlugin {
 
                 try {
                     JEVisDataSource ds = _object.getDataSource();
-                    Task aggrigate = null;
+                    Process aggrigate = null;
                     if (aggrigation == AGGREGATION.None) {
 
                     } else if (aggrigation == AGGREGATION.Daily) {
-                        aggrigate = new TaskImp();
+                        aggrigate = new BasicProcess();
                         aggrigate.setJEVisDataSource(ds);
                         aggrigate.setID("Dynamic");
-                        aggrigate.setProcessor(new AggrigatorProcessor());
-                        aggrigate.addOption(Options.PERIOD, Period.days(1).toString());
+                        aggrigate.setFunction(new AggrigatorFunction());
+//                        aggrigate.addOption(Options.PERIOD, Period.days(1).toString());
+                        aggrigate.getOptions().add(new BasicProcessOption(ProcessOptions.PERIOD, Period.days(1).toString()));
                     } else if (aggrigation == AGGREGATION.Monthly) {
-                        aggrigate = new TaskImp();
+                        aggrigate = new BasicProcess();
                         aggrigate.setJEVisDataSource(ds);
                         aggrigate.setID("Dynamic");
-                        aggrigate.setProcessor(new AggrigatorProcessor());
-                        aggrigate.addOption(Options.PERIOD, Period.months(1).toString());
+                        aggrigate.setFunction(new AggrigatorFunction());
+//                        aggrigate.addOption(Options.PERIOD, Period.months(1).toString());
+                        aggrigate.getOptions().add(new BasicProcessOption(ProcessOptions.PERIOD, Period.months(1).toString()));
                     } else if (aggrigation == AGGREGATION.Weekly) {
-                        aggrigate = new TaskImp();
+                        aggrigate = new BasicProcess();
                         aggrigate.setJEVisDataSource(ds);
                         aggrigate.setID("Dynamic");
-                        aggrigate.setProcessor(new AggrigatorProcessor());
-                        aggrigate.addOption(Options.PERIOD, Period.weeks(1).toString());
+                        aggrigate.setFunction(new AggrigatorFunction());
+//                        aggrigate.addOption(Options.PERIOD, Period.weeks(1).toString());
+                        aggrigate.getOptions().add(new BasicProcessOption(ProcessOptions.PERIOD, Period.weeks(1).toString()));
                     } else if (aggrigation == AGGREGATION.Yearly) {
 //                        System.out.println("year.....  " + Period.years(1).toString());
-                        aggrigate = new TaskImp();
+                        aggrigate = new BasicProcess();
                         aggrigate.setJEVisDataSource(ds);
                         aggrigate.setID("Dynamic");
-                        aggrigate.setProcessor(new AggrigatorProcessor());
-                        aggrigate.addOption(Options.PERIOD, Period.years(1).toString());
+                        aggrigate.setFunction(new AggrigatorFunction());
+//                        aggrigate.addOption(Options.PERIOD, Period.years(1).toString());
+                        aggrigate.getOptions().add(new BasicProcessOption(ProcessOptions.PERIOD, Period.years(1).toString()));
                     }
 
-                    Task dataPorceessor = null;
+                    Process dataPorceessor = null;
                     if (getDataProcessor() != null) {
-                        dataPorceessor = ProcessorObjectHandler.getTask(getDataProcessor());
+                        dataPorceessor = ProcessChains.getProcessChain(getDataProcessor());
                     }
                     if (dataPorceessor == null) {
                         if (aggrigate != null) {
-                            Task input = new TaskImp();
+                            Process input = new BasicProcess();
                             input.setJEVisDataSource(ds);
                             input.setID("Dynamic Input");
-                            input.setProcessor(new InputProcessor());
-                            input.getOptions().put(InputProcessor.ATTRIBUTE_ID, getAttribute().getName());
-                            input.getOptions().put(InputProcessor.OBJECT_ID, getAttribute().getObject().getID() + "");
-                            aggrigate.setSubTasks(Arrays.asList(input));
+                            input.setFunction(new InputFunction());
+
+                            input.getOptions().add(new BasicProcessOption(InputFunction.ATTRIBUTE_ID, _attribute.getName()));
+                            input.getOptions().add(new BasicProcessOption(InputFunction.OBJECT_ID, _attribute.getObject().getID() + ""));
+//                            input.getOptions().put(InputFunction.ATTRIBUTE_ID, getAttribute().getName());
+//                            input.getOptions().put(InputFunction.OBJECT_ID, getAttribute().getObject().getID() + "");
+                            aggrigate.setSubProcesses(Arrays.asList(input));
                             samples.addAll(aggrigate.getResult());
                         } else {
                             samples.addAll(getAttribute().getSamples(getSelectedStart(), getSelectedEnd()));
@@ -868,7 +876,7 @@ public class BarchartPlugin implements TreePlugin {
 
                     } else {
                         if (aggrigate != null) {
-                            aggrigate.setSubTasks(Arrays.asList(dataPorceessor));
+                            aggrigate.setSubProcesses(Arrays.asList(dataPorceessor));
                             samples.addAll(aggrigate.getResult());
                         } else {
                             samples.addAll(dataPorceessor.getResult());

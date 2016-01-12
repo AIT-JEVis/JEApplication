@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014 Envidatec GmbH <info@envidatec.com>
+ * Copyright (C) 2014-2015 Envidatec GmbH <info@envidatec.com>
  *
  * This file is part of JEConfig.
  *
@@ -19,23 +19,18 @@
  */
 package org.jevis.application.unit;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventType;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.util.Callback;
-import javax.measure.unit.NonSI;
-import javax.measure.unit.SI;
 import javax.measure.unit.Unit;
 import org.jevis.api.JEVisDataSource;
 import org.jevis.api.JEVisException;
@@ -44,6 +39,7 @@ import org.jevis.commons.unit.JEVisUnitImp;
 import org.jevis.commons.unit.UnitManager;
 
 /**
+ * TreeView to display JEVIsUnits in JEConfig
  *
  * @author Florian Simon <florian.simon@envidatec.com>
  */
@@ -187,7 +183,6 @@ public class UnitTree extends TreeView<UnitObject> {
 
         } else if (item.getValue().getType() == UnitObject.Type.Quntity) {
             if (item.getValue().getID().equals("Custom")) {
-                System.out.println("add Cutom subunits");
                 for (JEVisUnit child : UnitManager.getInstance().getCustomUnits()) {
                     UnitObject customUnit = new UnitObject(UnitObject.Type.NonSIUnit, child, item.getValue().getID() + child.toString());
                     TreeItem<UnitObject> newItem = buildItem(customUnit);
